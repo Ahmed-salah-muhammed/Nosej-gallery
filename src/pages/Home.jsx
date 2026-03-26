@@ -357,7 +357,7 @@ function Newsletter() {
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className={`w-full px-6 py-4 rounded-xl bg-white text-gray-900 font-bold ${error ? "border-2 border-red-500" : ""}`}
+                className={`border-1 w-full px-6 py-4 rounded-xl bg-white text-gray-900 font-bold ${error ? "border-2 border-red-500" : ""}`}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -372,7 +372,7 @@ function Newsletter() {
             </div>
             <button
               onClick={handleSubmit}
-              className="px-10 py-4 bg-white  font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all"
+              className="px-10 py-4 bg-white border-2 font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all"
             >
               SUBSCRIBE
             </button>
