@@ -283,7 +283,7 @@ export default function Footer() {
             className="text-[11px]"
             style={{ color: "var(--color-on-surface-variant)" }}
           >
-            `© ${new Date().getFullYear() + " "}
+            `© {new Date().getFullYear() + " "}
             <strong style={{ color: "var(--color-on-surface)" }}>
               Ahmed Salah
             </strong>{" "}

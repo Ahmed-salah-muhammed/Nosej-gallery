@@ -334,7 +334,7 @@ export default function Shop() {
                 <p className="text-xs text-white/70 leading-relaxed mb-6">
                   Join our circle for priority access and member shipping rates.
                 </p>
-                <button className="w-full py-3 bg-white font-black text-xs tracking-widest rounded-xl hover:bg-gray-100 transition-all">
+                <button className="w-full py-3 bg-white font-black text-xs tracking-widest rounded-xl hover:bg-gray-100 transition-all text-black">
                   JOIN NOW
                 </button>
               </div>

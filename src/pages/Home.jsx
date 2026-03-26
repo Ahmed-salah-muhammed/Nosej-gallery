@@ -91,15 +91,15 @@ function HeroCarousel() {
       <div className=" relative z-20 h-full max-w-7xl mx-auto px-4 flex items-center">
         <div className="max-w-xl">
           <span
-            className="block text-[11px] font-black tracking-[0.3em] mb-4 uppercase"
+            className="block text-[15px] font-black tracking-[0.3em] mb-4 uppercase"
             style={{ color: s.accent }}
           >
             {s.label}
           </span>
-          <h1 className="text-white font-black text-5xl md:text-8xl leading-[1.1] mb-6 whitespace-pre-line drop-shadow-2xl">
+          <h1 className="text-white font-black text-5xl md:text-7xl leading-[1.1] mb-6 whitespace-pre-line drop-shadow-2xl">
             {s.title}
           </h1>
-          <p className="text-white/80 text-lg md:text-xl mb-10 leading-relaxed max-w-md">
+          <p className="text-white/80 text-md md:text-lg mb-10 leading-relaxed max-w-md">
             {s.sub}
           </p>
           <div className="flex gap-4">

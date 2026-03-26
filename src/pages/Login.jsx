@@ -155,7 +155,7 @@ export default function Login() {
                 {mode === "login" && (
                   <button
                     type="button"
-                    className="text-[10px] font-black text-[#131b2e] hover:underline uppercase tracking-widest"
+                    className="text-[10px] font-black  hover:underline uppercase tracking-widest"
                   >
                     Forgot password?
                   </button>
@@ -227,7 +227,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={toggleMode}
-                  className="text-[#131b2e] font-black hover:underline"
+                  className=" font-black hover:underline"
                 >
                   {mode === "login" ? "Sign up now" : "Sign in here"}
                 </button>

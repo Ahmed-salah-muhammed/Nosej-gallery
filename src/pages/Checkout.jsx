@@ -355,7 +355,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="w-full py-4 bg-white text-[#131b2e] font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all mb-8 disabled:opacity-50"
+                  className="cursor-pointer w-full py-4 bg-white text-[#3a5594] font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all mb-8 disabled:opacity-50"
                 >
                   {isProcessing ? "PROCESSING..." : "COMPLETE PURCHASE"}
                 </button>

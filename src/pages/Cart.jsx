@@ -212,13 +212,13 @@ export default function Cart() {
 
                 <button
                   onClick={() => navigate("/checkout")}
-                  className="w-full py-4  text-white font-black text-sm tracking-widest rounded-xl hover:bg-black transition-all mb-4"
+                  className="cursor-pointer w-full  hover:bg-blue-200 py-4 border-2 border-gray-200 text-gray-900 font-black text-sm tracking-widest rounded-xl hover:border-[#131b2e] transition-all my-4"
                 >
                   PROCEED TO CHECKOUT
                 </button>
                 <button
                   onClick={() => navigate("/shop")}
-                  className="w-full py-4 border-2 border-gray-200 text-gray-900 font-black text-sm tracking-widest rounded-xl hover:border-[#131b2e] transition-all"
+                  className="cursor-pointer w-full py-4 border-2 border-gray-200 text-gray-900 font-black text-sm tracking-widest rounded-xl hover:border-[#131b2e] transition-all"
                 >
                   CONTINUE SHOPPING
                 </button>
