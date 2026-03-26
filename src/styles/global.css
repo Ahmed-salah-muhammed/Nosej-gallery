@@ -3,48 +3,173 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS  (light = default)
+═══════════════════════════════════════════════════════════════ */
 @theme {
-  --font-sans: 'Inter', sans-serif;
+  --font-sans:    'Inter', sans-serif;
   --font-display: 'Playfair Display', serif;
-  --color-primary: #2a14b4;
-  --color-primary-container: #4338ca;
-  --color-on-primary: #ffffff;
-  --color-secondary: #515f74;
-  --color-background: #faf8ff;
-  --color-surface: #faf8ff;
-  --color-surface-container-low: #f2f3ff;
+
+  --color-primary:                   #2a14b4;
+  --color-primary-container:         #4338ca;
+  --color-on-primary:                #ffffff;
+  --color-secondary:                 #515f74;
+
+  --color-background:                #faf8ff;
+  --color-surface:                   #faf8ff;
+  --color-surface-container-low:     #f2f3ff;
   --color-surface-container-highest: #dae2fd;
-  --color-on-surface: #131b2e;
-  --color-on-surface-variant: #464554;
-  --color-outline-variant: #c7c4d7;
+
+  --color-on-surface:                #131b2e;
+  --color-on-surface-variant:        #464554;
+  --color-outline-variant:           #c7c4d7;
+
   --radius-lg: 16px;
   --radius-md: 8px;
   --animate-marquee: marquee 30s linear infinite;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE TOKENS
+═══════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --color-background: #0f1629;
-  --color-surface: #1a2235;
-  --color-surface-container-low: #151f33;
+  --color-background:                #0f1629;
+  --color-surface:                   #1a2235;
+  --color-surface-container-low:     #151f33;
   --color-surface-container-highest: #222d45;
-  --color-on-surface: #e8eaf6;
-  --color-on-surface-variant: #8892a4;
-  --color-outline-variant: #2d3a52;
+  --color-on-surface:                #e8eaf6;
+  --color-on-surface-variant:        #8892a4;
+  --color-outline-variant:           #2d3a52;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════════════ */
+html {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — COMPREHENSIVE TAILWIND OVERRIDES
+   These map Tailwind's hard-coded color classes to CSS vars
+   so every component in the app responds to dark mode WITHOUT
+   needing individual rewrites.
+═══════════════════════════════════════════════════════════════ */
+
+/* Backgrounds */
+[data-theme="dark"] .bg-white          { background-color: var(--color-surface) !important; }
+[data-theme="dark"] .bg-gray-50        { background-color: var(--color-surface-container-low) !important; }
+[data-theme="dark"] .bg-gray-100       { background-color: var(--color-surface-container-highest) !important; }
+[data-theme="dark"] .bg-gray-200       { background-color: #1e2d45 !important; }
+[data-theme="dark"] .hover\:bg-gray-50:hover  { background-color: var(--color-surface-container-highest) !important; }
+[data-theme="dark"] .hover\:bg-gray-100:hover { background-color: var(--color-surface-container-highest) !important; }
+
+/* Text colors */
+[data-theme="dark"] .text-gray-900     { color: var(--color-on-surface) !important; }
+[data-theme="dark"] .text-gray-800     { color: var(--color-on-surface) !important; }
+[data-theme="dark"] .text-gray-700     { color: #c5c9d6 !important; }
+[data-theme="dark"] .text-gray-600     { color: var(--color-on-surface-variant) !important; }
+[data-theme="dark"] .text-gray-500     { color: var(--color-on-surface-variant) !important; }
+[data-theme="dark"] .text-gray-400     { color: #6b7a93 !important; }
+[data-theme="dark"] .text-gray-300     { color: #3d4f6a !important; }
+
+/* Borders */
+[data-theme="dark"] .border-gray-100   { border-color: var(--color-outline-variant) !important; }
+[data-theme="dark"] .border-gray-200   { border-color: var(--color-outline-variant) !important; }
+[data-theme="dark"] .border-gray-300   { border-color: #3d4f6a !important; }
+
+/* Hover text */
+[data-theme="dark"] .hover\:text-gray-900:hover  { color: var(--color-on-surface) !important; }
+[data-theme="dark"] .hover\:text-\[\#131b2e\]:hover { color: #a3b3d6 !important; }
+
+/* Navbar — sticky white bar */
+[data-theme="dark"] nav.sticky,
+[data-theme="dark"] nav[class*="sticky"] {
+  background-color: rgba(15, 22, 41, 0.92) !important;
+  border-color: var(--color-outline-variant) !important;
+}
+[data-theme="dark"] .bg-white\/90 {
+  background-color: rgba(15, 22, 41, 0.92) !important;
+}
+
+/* Glass header */
+.glass-header {
+  background-color: rgba(250, 248, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+[data-theme="dark"] .glass-header {
+  background-color: rgba(15, 22, 41, 0.88) !important;
+}
+
+/* Live search dropdown */
+[data-theme="dark"] .z-\[1500\].bg-white {
+  background-color: var(--color-surface-container-low) !important;
+}
+
+/* Footer */
+[data-theme="dark"] footer.bg-gray-50  { background-color: var(--color-surface-container-low) !important; }
+
+/* Input fields (native) */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] textarea {
+  background-color: var(--color-surface-container-low) !important;
+  color: var(--color-on-surface) !important;
+  border-color: var(--color-outline-variant) !important;
+}
+[data-theme="dark"] input::placeholder { color: var(--color-on-surface-variant) !important; }
+
+/* MUI components in dark mode — fill gaps CssBaseline doesn't cover */
+[data-theme="dark"] .MuiDrawer-paper  { background-color: var(--color-surface) !important; }
+[data-theme="dark"] .MuiMenu-paper,
+[data-theme="dark"] .MuiPopover-paper { background-color: var(--color-surface-container-low) !important; }
+[data-theme="dark"] .MuiMenuItem-root { color: var(--color-on-surface) !important; }
+[data-theme="dark"] .MuiMenuItem-root:hover { background-color: var(--color-surface-container-highest) !important; }
+[data-theme="dark"] .MuiOutlinedInput-root { border-color: var(--color-outline-variant) !important; }
+[data-theme="dark"] .MuiInputLabel-root { color: var(--color-on-surface-variant) !important; }
+[data-theme="dark"] .MuiSvgIcon-root:not([style]) { color: var(--color-on-surface) !important; }
+
+/* Payment badges in footer */
+[data-theme="dark"] .border-gray-200.bg-white.rounded-lg {
+  background-color: var(--color-surface-container-low) !important;
+  border-color: var(--color-outline-variant) !important;
+}
+
+/* Section headers (bg-gray-50 bands) */
+[data-theme="dark"] .py-12.bg-gray-50,
+[data-theme="dark"] .py-16.bg-gray-50 {
+  background-color: var(--color-surface-container-low) !important;
+}
+
+/* Sidebar promo card — keep dark navy in both modes */
+/* (already bg-[#131b2e] so no override needed) */
+
+/* Announcement bar — keep dark in both modes */
+/* (already bg-[#131b2e] so no override needed) */
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
 @keyframes marquee {
-  0% { transform: translateX(0); }
+  0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
 .marquee-track {
   display: flex;
   width: max-content;
   animation: marquee 28s linear infinite;
 }
-.marquee-track:hover {
-  animation-play-state: paused;
-}
+.marquee-track:hover { animation-play-state: paused; }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -58,32 +183,21 @@
 }
 .card-entry { animation: cardEntry 0.4s ease forwards; }
 
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════════════ */
 @layer utilities {
   .signature-gradient {
     background: linear-gradient(135deg, #2a14b4 0%, #4338ca 100%);
-  }
-  .glass-header {
-    background-color: rgba(250, 248, 255, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  [data-theme="dark"] .glass-header {
-    background-color: rgba(15, 22, 41, 0.85);
   }
   .tonal-shadow {
     box-shadow: 0 20px 40px rgba(19, 27, 46, 0.06);
   }
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-surface);
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════════════════════════ */
 .editorial-headline {
   font-size: 3.5rem;
   font-weight: 900;
@@ -92,4 +206,16 @@ body {
 }
 @media (max-width: 768px) {
   .editorial-headline { font-size: 2.5rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBARS
+═══════════════════════════════════════════════════════════════ */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
 }

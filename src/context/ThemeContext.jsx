@@ -6,26 +6,38 @@ const ThemeContext = createContext(null)
 
 export function ThemeProvider({ children }) {
   const [dark, setDark] = useState(() => {
-    try { return localStorage.getItem('shopwave-theme') === 'dark' }
-    catch { return false }
+    try {
+      return localStorage.getItem('shopwave-theme') === 'dark'
+    } catch {
+      return false
+    }
   })
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+    // Apply data-theme attribute to html element — drives CSS vars in global.css
+    const root = document.documentElement
     if (dark) {
-      document.documentElement.classList.add('dark')
+      root.setAttribute('data-theme', 'dark')
+      root.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark')
+      root.setAttribute('data-theme', 'light')
+      root.classList.remove('dark')
     }
-    try { localStorage.setItem('shopwave-theme', dark ? 'dark' : 'light') }
-    catch {}
+    // Persist preference
+    try {
+      localStorage.setItem('shopwave-theme', dark ? 'dark' : 'light')
+    } catch {}
   }, [dark])
 
+  // Re-create MUI theme whenever mode changes
   const muiTheme = useMemo(() => getAppTheme(dark ? 'dark' : 'light'), [dark])
 
+  const toggle = () => setDark((d) => !d)
+
   return (
-    <ThemeContext.Provider value={{ dark, toggle: () => setDark(d => !d) }}>
+    <ThemeContext.Provider value={{ dark, toggle }}>
       <MUIThemeProvider theme={muiTheme}>
+        {/* CssBaseline applies MUI palette.background.default to <body> */}
         <CssBaseline />
         {children}
       </MUIThemeProvider>

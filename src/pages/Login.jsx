@@ -80,7 +80,7 @@ export default function Login() {
         {/* Brand */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-black tracking-[0.2em] font-serif text-gray-900 mb-2">
-            ATELIER
+            NOSEJ
           </h1>
           <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
             THE DIGITAL BOUTIQUE
@@ -94,7 +94,7 @@ export default function Login() {
           <p className="text-sm text-gray-500 mb-10 font-bold">
             {mode === "login"
               ? "Sign in to access your archive and orders."
-              : "Join the Atelier. Get early access and exclusive deals."}
+              : "Join the NOSEJ. Get early access and exclusive deals."}
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -112,7 +112,7 @@ export default function Login() {
                   helperText={errors.name}
                   autoComplete="name"
                   variant="outlined"
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
               </div>
             )}
@@ -131,7 +131,7 @@ export default function Login() {
                 helperText={errors.email}
                 autoComplete="email"
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -153,7 +153,10 @@ export default function Login() {
                   PASSWORD
                 </label>
                 {mode === "login" && (
-                  <button type="button" className="text-[10px] font-black text-[#131b2e] hover:underline uppercase tracking-widest">
+                  <button
+                    type="button"
+                    className="text-[10px] font-black text-[#131b2e] hover:underline uppercase tracking-widest"
+                  >
                     Forgot password?
                   </button>
                 )}
@@ -166,9 +169,11 @@ export default function Login() {
                 onChange={set("password")}
                 error={!!errors.password}
                 helperText={errors.password}
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -207,14 +212,18 @@ export default function Login() {
             >
               {loading ? (
                 <CircularProgress size={20} color="inherit" />
+              ) : mode === "login" ? (
+                "SIGN IN"
               ) : (
-                mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"
+                "CREATE ACCOUNT"
               )}
             </button>
 
             <div className="text-center mt-6">
               <p className="text-xs font-bold text-gray-500">
-                {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+                {mode === "login"
+                  ? "Don't have an account?"
+                  : "Already have an account?"}{" "}
                 <button
                   type="button"
                   onClick={toggleMode}
