@@ -146,7 +146,7 @@ shopwave/
 ├── vercel.json
 └── package.json
 ```
-
+Project Link: https://nosej.netlify.app/
 ---
 
 ## ✨ Features
