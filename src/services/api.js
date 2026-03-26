@@ -1,16 +1,17 @@
 // src/services/api.js
-// Centralised API layer — swap BASE_URL to use a different store API
+// Centralised API layer — updated to use DummyJSON
 
-const BASE_URL = "https://fakestoreapi.com";
+const BASE_URL = "https://dummyjson.com";
 
 /**
  * Fetch all products
  * @returns {Promise<Product[]>}
  */
 export async function fetchProducts() {
-  const res = await fetch(`${BASE_URL}/products`);
+  const res = await fetch(`${BASE_URL}/products?limit=100`);
   if (!res.ok) throw new Error(`Failed to fetch products (${res.status})`);
-  return res.json();
+  const data = await res.json();
+  return data.products; // DummyJSON returns { products: [], total, skip, limit }
 }
 
 /**
@@ -29,7 +30,7 @@ export async function fetchProduct(id) {
  * @returns {Promise<string[]>}
  */
 export async function fetchCategories() {
-  const res = await fetch(`${BASE_URL}/products/categories`);
+  const res = await fetch(`${BASE_URL}/products/category-list`);
   if (!res.ok) throw new Error(`Failed to fetch categories (${res.status})`);
   return res.json();
 }

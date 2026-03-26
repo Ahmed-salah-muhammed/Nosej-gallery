@@ -4,7 +4,6 @@ import {
   Route,
   Link as RouterLink,
 } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
@@ -44,52 +43,23 @@ function AppProviders({ children }) {
 
 function NotFound() {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 3,
-        px: 4,
-        bgcolor: "background.default",
-      }}
-    >
-      <Typography
-        variant="h1"
-        sx={{
-          fontSize: { xs: "6rem", md: "12rem" },
-          fontWeight: 900,
-          letterSpacing: "-0.05em",
-          color: "surface.containerHighest",
-          lineHeight: 1,
-        }}
-      >
+    <div className="min-h-screen flex flex-col items-center justify-center gap-8 px-4 bg-white">
+      <h1 className="text-[10rem] md:text-[15rem] font-black tracking-tighter text-gray-50 leading-none">
         404
-      </Typography>
-      <Typography
-        variant="h4"
-        sx={{ fontWeight: 900, letterSpacing: "-0.02em" }}
-      >
+      </h1>
+      <h2 className="text-4xl font-black tracking-tight text-gray-900 -mt-20">
         Page not found
-      </Typography>
-      <Typography
-        variant="body1"
-        sx={{ color: "text.secondary", mb: 2, textAlign: "center" }}
-      >
+      </h2>
+      <p className="text-gray-500 text-center max-w-md">
         The piece you're looking for has moved or no longer exists.
-      </Typography>
-      <Button
-        component={RouterLink}
+      </p>
+      <RouterLink
         to="/"
-        variant="contained"
-        size="large"
-        sx={{ px: 6, py: 2 }}
+        className="px-10 py-4 bg-[#131b2e] text-white font-black text-sm tracking-widest rounded-xl hover:bg-black transition-all"
       >
         RETURN TO ATELIER
-      </Button>
-    </Box>
+      </RouterLink>
+    </div>
   );
 }
 

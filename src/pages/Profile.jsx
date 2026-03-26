@@ -1,20 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
-  Box, Container, Typography, Stack, Paper, Avatar,
-  Button, Chip, Divider, LinearProgress, Tab, Tabs
+  Avatar,
+  Button, Tab, Tabs
 } from '@mui/material'
-import Grid2 from '@mui/material/Grid2'
 import {
   CheckCircle as CheckIcon, LocalShipping as ShipIcon,
   Inventory as BoxIcon, EmojiEvents as DeliveredIcon,
   ReceiptLong as ReceiptIcon, Map as MapIcon,
-  PersonOutline as PersonIcon, FavoriteBorder as WishIcon
+  FavoriteBorder as WishIcon
 } from '@mui/icons-material'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
+import L from 'leaflet'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import Breadcrumbs from '../components/Breadcrumbs'
 import Footer from '../components/Footer'
+
+// Fix Leaflet icon issue
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
+let DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+})
+L.Marker.prototype.options.icon = DefaultIcon
+
+const NOSEJ_LOCATION = [30.0444, 31.2357] // Central Cairo
+
+function MapUpdater({ center }) {
+  const map = useMap()
+  useEffect(() => {
+    if (center) map.setView(center, 13)
+  }, [center, map])
+  return null
+}
 
 /* ── Order Tracker ── */
 const ORDER_STEPS = [
@@ -26,121 +49,127 @@ const ORDER_STEPS = [
 
 function OrderTracker({ activeStep = 2 }) {
   return (
-    <Box>
-      <Typography variant="h6" sx={{ fontWeight: 900, mb: 3 }}>Order #ATL-20250320</Typography>
-      <Box sx={{ position: 'relative', mb: 2 }}>
+    <div>
+      <h3 className="text-xl font-black mb-8 text-gray-900">Order #ATL-20250320</h3>
+      <div className="relative mb-12">
         {/* Progress line */}
-        <Box sx={{ position: 'absolute', top: 22, left: '12.5%', right: '12.5%', height: 3, bgcolor: 'surface.containerHighest', borderRadius: 2, zIndex: 0 }} />
-        <Box sx={{
-          position: 'absolute', top: 22, left: '12.5%', height: 3, bgcolor: 'primary.main',
-          borderRadius: 2, zIndex: 1,
-          width: `${(activeStep / (ORDER_STEPS.length - 1)) * 75}%`,
-          transition: 'width 1s ease'
-        }} />
-        <Grid2 container sx={{ position: 'relative', zIndex: 2 }}>
+        <div className="absolute top-[22px] left-[12.5%] right-[12.5%] h-1 bg-gray-100 rounded-full z-0" />
+        <div 
+          className="absolute top-[22px] left-[12.5%] h-1 bg-[#131b2e] rounded-full z-10 transition-all duration-1000" 
+          style={{ width: `${(activeStep / (ORDER_STEPS.length - 1)) * 75}%` }}
+        />
+        <div className="grid grid-cols-4 relative z-20">
           {ORDER_STEPS.map((step, i) => {
             const done = i <= activeStep
             const active = i === activeStep
             return (
-              <Grid2 key={step.label} size={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
-                <Box sx={{
-                  width: 44, height: 44, borderRadius: '50%',
-                  bgcolor: done ? 'primary.main' : 'surface.containerHighest',
-                  color: done ? 'white' : 'text.disabled',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: active ? '0 0 0 4px rgba(42,20,180,0.2)' : 'none',
-                  transition: 'all 0.4s'
-                }}>
+              <div key={step.label} className="flex flex-col items-center gap-4">
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500 ${done ? 'bg-[#131b2e] text-white' : 'bg-gray-100 text-gray-300'} ${active ? 'ring-4 ring-[#131b2e]/20' : ''}`}>
                   {done ? <CheckIcon sx={{ fontSize: 20 }} /> : step.icon}
-                </Box>
-                <Typography variant="caption" sx={{ fontWeight: active ? 900 : 700, color: done ? 'primary.main' : 'text.secondary', textAlign: 'center', lineHeight: 1.3 }}>
-                  {step.label}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.disabled', textAlign: 'center', lineHeight: 1.3, fontSize: '0.68rem', display: { xs: 'none', sm: 'block' } }}>
-                  {step.desc}
-                </Typography>
-              </Grid2>
+                </div>
+                <div className="text-center">
+                  <p className={`text-[10px] font-black uppercase tracking-wider mb-1 ${done ? 'text-[#131b2e]' : 'text-gray-400'}`}>
+                    {step.label}
+                  </p>
+                  <p className="text-[9px] font-bold text-gray-400 hidden sm:block">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
             )
           })}
-        </Grid2>
-      </Box>
-      <Chip label="In Transit — On Time" color="primary" size="small" sx={{ mt: 2, fontWeight: 700 }} />
-    </Box>
+        </div>
+      </div>
+      <span className="inline-block px-3 py-1 bg-[#131b2e] text-white text-[10px] font-black rounded-md uppercase tracking-widest">
+        In Transit — On Time
+      </span>
+    </div>
   )
 }
 
 /* ── GIS Map Placeholder ── */
 function GISTrackingMap() {
-  return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-        <MapIcon sx={{ color: 'primary.main' }} />
-        <Typography variant="h6" sx={{ fontWeight: 900 }}>Live Order Map</Typography>
-        <Chip label="GIS Feature" size="small" color="primary" variant="outlined" sx={{ fontWeight: 700, fontSize: '0.68rem' }} />
-      </Box>
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2, lineHeight: 1.7 }}>
-        Real-time delivery route simulation — from warehouse to your doorstep. Powered by GIS technology.
-      </Typography>
+  const [userLocation, setUserLocation] = useState(null)
+  const [distance, setDistance] = useState(null)
 
-      {/* SVG Map Mockup */}
-      <Box sx={{ borderRadius: '16px', overflow: 'hidden', border: '2px solid', borderColor: 'primary.main', position: 'relative' }}>
-        <Box component="svg" viewBox="0 0 600 300" sx={{ width: '100%', display: 'block', bgcolor: '#e8f0fe' }}>
-          {/* Grid lines */}
-          {[...Array(6)].map((_, i) => (
-            <line key={`h${i}`} x1="0" y1={i * 50} x2="600" y2={i * 50} stroke="#c5cae9" strokeWidth="0.5" />
-          ))}
-          {[...Array(12)].map((_, i) => (
-            <line key={`v${i}`} x1={i * 50} y1="0" x2={i * 50} y2="300" stroke="#c5cae9" strokeWidth="0.5" />
-          ))}
-          {/* Roads */}
-          <path d="M50 200 Q200 150 300 180 Q420 200 550 140" fill="none" stroke="#bdbdbd" strokeWidth="8" strokeLinecap="round" />
-          <path d="M50 200 Q200 150 300 180 Q420 200 550 140" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" />
-          <path d="M150 50 L150 250" fill="none" stroke="#bdbdbd" strokeWidth="6" />
-          <path d="M150 50 L150 250" fill="none" stroke="white" strokeWidth="3" />
-          <path d="M350 30 L350 270" fill="none" stroke="#bdbdbd" strokeWidth="6" />
-          <path d="M350 30 L350 270" fill="none" stroke="white" strokeWidth="3" />
-          {/* Delivery route */}
-          <path d="M80 190 Q160 160 220 172 Q290 185 350 178 Q430 168 530 148" fill="none" stroke="#2a14b4" strokeWidth="3" strokeDasharray="8 4" strokeLinecap="round" />
-          {/* Warehouse */}
-          <rect x="55" y="175" width="50" height="35" rx="4" fill="#2a14b4" opacity="0.9" />
-          <text x="80" y="197" fill="white" fontSize="9" textAnchor="middle" fontWeight="bold">WH</text>
-          <text x="80" y="223" fill="#2a14b4" fontSize="8" textAnchor="middle" fontWeight="bold">Warehouse</text>
-          {/* Moving truck */}
-          <rect x="320" y="167" width="38" height="20" rx="3" fill="#4338ca" />
-          <circle cx="328" cy="190" r="5" fill="#131b2e" />
-          <circle cx="350" cy="190" r="5" fill="#131b2e" />
-          <text x="339" y="181" fill="white" fontSize="8" textAnchor="middle" fontWeight="bold">🚚</text>
-          {/* Destination pin */}
-          <ellipse cx="525" cy="145" rx="18" ry="8" fill="rgba(200,68,42,0.2)" />
-          <path d="M525 105 C515 105 508 112 508 121 C508 134 525 148 525 148 C525 148 542 134 542 121 C542 112 535 105 525 105Z" fill="#c8442a" />
-          <circle cx="525" cy="121" r="6" fill="white" />
-          <text x="525" y="158" fill="#c8442a" fontSize="8" textAnchor="middle" fontWeight="bold">YOU</text>
-          {/* Distance label */}
-          <rect x="220" y="135" width="110" height="24" rx="6" fill="white" stroke="#2a14b4" strokeWidth="1" />
-          <text x="275" y="151" fill="#2a14b4" fontSize="9" textAnchor="middle" fontWeight="bold">Est. 2.4 km · 18 min</text>
-        </Box>
-        <Box sx={{ p: 2, bgcolor: 'surface.containerLow', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Stack direction="row" spacing={2}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Box sx={{ width: 12, height: 12, borderRadius: '2px', bgcolor: 'primary.main' }} />
-              <Typography variant="caption" sx={{ fontWeight: 700 }}>Warehouse</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#c8442a' }} />
-              <Typography variant="caption" sx={{ fontWeight: 700 }}>Your Location</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Box sx={{ width: 12, height: 4, bgcolor: '#4338ca', borderRadius: 1 }} />
-              <Typography variant="caption" sx={{ fontWeight: 700 }}>Route</Typography>
-            </Box>
-          </Stack>
-          <Chip label="● LIVE" size="small" sx={{ bgcolor: '#4ade8020', color: '#16a34a', fontWeight: 800, fontSize: '0.68rem', height: 22 }} />
-        </Box>
-      </Box>
-      <Typography variant="caption" sx={{ color: 'text.disabled', mt: 1.5, display: 'block', fontStyle: 'italic' }}>
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation([latitude, longitude])
+        
+        // Simple distance calculation (Haversine formula simplified)
+        const R = 6371 // km
+        const dLat = (latitude - NOSEJ_LOCATION[0]) * Math.PI / 180
+        const dLon = (longitude - NOSEJ_LOCATION[1]) * Math.PI / 180
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(NOSEJ_LOCATION[0] * Math.PI / 180) * Math.cos(latitude * Math.PI / 180) * 
+                  Math.sin(dLon/2) * Math.sin(dLon/2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+        setDistance(R * c)
+      })
+    }
+  }, [])
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <MapIcon className="text-[#131b2e]" />
+        <h3 className="text-xl font-black text-gray-900">Live Order Map</h3>
+        <span className="px-2 py-0.5 border border-[#131b2e] text-[#131b2e] text-[9px] font-black rounded uppercase tracking-widest">GIS Feature</span>
+      </div>
+      <p className="text-gray-500 text-sm leading-relaxed mb-8">
+        Real-time delivery route simulation — from our Cairo Atelier to your doorstep. Powered by Leaflet GIS.
+      </p>
+
+      <div className="rounded-3xl overflow-hidden border-2 border-[#131b2e] relative shadow-xl h-[400px] z-0">
+        <MapContainer center={NOSEJ_LOCATION} zoom={13} style={{ height: '100%', width: '100%' }}>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <Marker position={NOSEJ_LOCATION}>
+            <Popup>
+              <div className="font-black text-xs">NOSEJ GALLERY</div>
+              <div className="text-[10px] text-gray-500">Central Cairo Atelier</div>
+            </Popup>
+          </Marker>
+          
+          {userLocation && (
+            <>
+              <Marker position={userLocation}>
+                <Popup>
+                  <div className="font-black text-xs">YOUR LOCATION</div>
+                </Popup>
+              </Marker>
+              <Polyline positions={[NOSEJ_LOCATION, userLocation]} color="#131b2e" dashArray="10, 10" />
+              <MapUpdater center={userLocation} />
+            </>
+          )}
+        </MapContainer>
+        
+        <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur p-4 rounded-2xl flex justify-between items-center border border-gray-100 z-[1000]">
+          <div className="flex gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-sm bg-[#131b2e]" />
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Atelier</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">You</span>
+            </div>
+          </div>
+          {distance && (
+            <span className="text-[10px] font-black text-[#131b2e] bg-blue-50 px-3 py-1 rounded-md">
+              EST. {distance.toFixed(1)} KM · {Math.round(distance * 15)} MIN
+            </span>
+          )}
+        </div>
+      </div>
+      <p className="text-[10px] font-bold text-gray-400 mt-6 italic">
         🌍 Built by Ahmed Salah — GIS Analyst & Full-Stack Developer
-      </Typography>
-    </Box>
+      </p>
+    </div>
   )
 }
 
@@ -158,84 +187,116 @@ export default function Profile() {
   const [tab, setTab] = useState(0)
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 7 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5, fontFamily: '"Playfair Display", serif' }}>My Profile</Typography>
+    <div className="bg-white min-h-screen">
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">My Profile</h1>
           <Breadcrumbs />
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 8 }}>
-        <Grid2 container spacing={4}>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Sidebar */}
-          <Grid2 size={{ xs: 12, md: 4, lg: 3 }}>
-            <Paper sx={{ p: 4, borderRadius: '20px', bgcolor: 'surface.containerLow', border: '1px solid', borderColor: 'outlineVariant', textAlign: 'center', mb: 3 }}>
-              <Avatar sx={{ width: 80, height: 80, mx: 'auto', mb: 2, bgcolor: 'primary.main', fontSize: '2rem', fontWeight: 900 }}>
+          <aside className="lg:col-span-3">
+            <div className="bg-gray-50 rounded-[32px] border border-gray-100 p-10 text-center shadow-sm">
+              <Avatar 
+                className="w-24 h-24 mx-auto mb-6 bg-[#131b2e] text-2xl font-black"
+                sx={{ width: 96, height: 96, bgcolor: '#131b2e' }}
+              >
                 {user?.name?.[0]?.toUpperCase() || 'A'}
               </Avatar>
-              <Typography variant="h6" sx={{ fontWeight: 900, mb: 0.5 }}>{user?.name}</Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>{user?.email}</Typography>
-              <Divider sx={{ mb: 3 }} />
-              <Grid2 container spacing={2}>
-                {[{ label: 'Cart Items', value: totalCount, icon: <BoxIcon sx={{ fontSize: 18 }} /> },
-                  { label: 'Wishlist', value: wishlist.length, icon: <WishIcon sx={{ fontSize: 18 }} /> },
-                  { label: 'Orders', value: MOCK_ORDERS.length, icon: <ReceiptIcon sx={{ fontSize: 18 }} /> }].map(s => (
-                  <Grid2 key={s.label} size={4}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h5" sx={{ fontWeight: 900, color: 'primary.main' }}>{s.value}</Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mt: 0.25, lineHeight: 1.3 }}>{s.label}</Typography>
-                    </Box>
-                  </Grid2>
+              <h2 className="text-xl font-black text-gray-900 mb-1">{user?.name}</h2>
+              <p className="text-sm text-gray-500 mb-8">{user?.email}</p>
+              
+              <hr className="border-gray-200 mb-8" />
+              
+              <div className="grid grid-cols-3 gap-4 mb-10">
+                {[
+                  { label: 'Cart', value: totalCount },
+                  { label: 'Wishlist', value: wishlist.length },
+                  { label: 'Orders', value: MOCK_ORDERS.length }
+                ].map(s => (
+                  <div key={s.label} className="text-center">
+                    <span className="block text-xl font-black text-[#131b2e]">{s.value}</span>
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{s.label}</span>
+                  </div>
                 ))}
-              </Grid2>
-              <Button variant="outlined" fullWidth onClick={logout} sx={{ mt: 3, fontWeight: 800, color: 'error.main', borderColor: 'error.main', '&:hover': { bgcolor: 'rgba(211,47,47,0.05)' } }}>
+              </div>
+              
+              <button 
+                onClick={logout}
+                className="w-full py-3 border-2 border-red-100 text-red-600 font-black text-[10px] tracking-widest rounded-xl hover:bg-red-50 transition-all uppercase"
+              >
                 SIGN OUT
-              </Button>
-            </Paper>
-          </Grid2>
+              </button>
+            </div>
+          </aside>
 
           {/* Main Content */}
-          <Grid2 size={{ xs: 12, md: 8, lg: 9 }}>
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 4, '& .MuiTab-root': { fontWeight: 800, textTransform: 'uppercase', fontSize: '0.78rem', letterSpacing: '0.06em' } }}>
-              <Tab label="Order History" />
-              <Tab label="Track Order" />
-              <Tab label="Live Map" />
-            </Tabs>
+          <main className="lg:col-span-9">
+            <div className="mb-10 border-b border-gray-100">
+              <Tabs 
+                value={tab} 
+                onChange={(_, v) => setTab(v)} 
+                sx={{ 
+                  '& .MuiTab-root': { 
+                    fontWeight: 900, 
+                    textTransform: 'uppercase', 
+                    fontSize: '11px', 
+                    letterSpacing: '0.15em',
+                    color: '#9ca3af',
+                    '&.Mui-selected': { color: '#131b2e' }
+                  },
+                  '& .MuiTabs-indicator': { bgcolor: '#131b2e' }
+                }}
+              >
+                <Tab label="Order History" />
+                <Tab label="Track Order" />
+                <Tab label="Live Map" />
+              </Tabs>
+            </div>
 
             {tab === 0 && (
-              <Stack spacing={2}>
+              <div className="flex flex-col gap-4">
                 {MOCK_ORDERS.map(order => (
-                  <Paper key={order.id} sx={{ p: 3, borderRadius: '16px', bgcolor: 'surface.containerLow', border: '1px solid', borderColor: 'outlineVariant', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 2 }}>
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 900, mb: 0.5 }}>{order.id}</Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{order.date} · {order.items} items</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 900 }}>${order.total}</Typography>
-                      <Chip label={order.status} color={order.statusColor} size="small" sx={{ fontWeight: 800, fontSize: '0.72rem' }} />
-                      <Button size="small" variant="outlined" onClick={() => setTab(1)} sx={{ fontWeight: 800, fontSize: '0.72rem' }}>TRACK</Button>
-                    </Box>
-                  </Paper>
+                  <div key={order.id} className="bg-white p-6 rounded-2xl border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:shadow-md transition-shadow">
+                    <div>
+                      <h4 className="font-black text-gray-900 mb-1">{order.id}</h4>
+                      <p className="text-xs text-gray-500 font-bold">{order.date} · {order.items} items</p>
+                    </div>
+                    <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                      <span className="text-xl font-black text-gray-900">${order.total.toFixed(2)}</span>
+                      <span className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${order.status === 'Delivered' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
+                        {order.status}
+                      </span>
+                      <button 
+                        onClick={() => setTab(1)}
+                        className="text-[10px] font-black text-[#131b2e] hover:underline tracking-widest uppercase"
+                      >
+                        TRACK
+                      </button>
+                    </div>
+                  </div>
                 ))}
-              </Stack>
+              </div>
             )}
 
             {tab === 1 && (
-              <Paper sx={{ p: 4, borderRadius: '20px', bgcolor: 'surface.containerLow', border: '1px solid', borderColor: 'outlineVariant' }}>
+              <div className="bg-white p-10 rounded-[32px] border border-gray-100 shadow-sm">
                 <OrderTracker activeStep={2} />
-              </Paper>
+              </div>
             )}
 
             {tab === 2 && (
-              <Paper sx={{ p: 4, borderRadius: '20px', bgcolor: 'surface.containerLow', border: '1px solid', borderColor: 'outlineVariant' }}>
+              <div className="bg-white p-10 rounded-[32px] border border-gray-100 shadow-sm">
                 <GISTrackingMap />
-              </Paper>
+              </div>
             )}
-          </Grid2>
-        </Grid2>
-      </Container>
+          </main>
+        </div>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 }

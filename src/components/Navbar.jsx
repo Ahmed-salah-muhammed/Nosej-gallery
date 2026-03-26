@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
-  AppBar, Toolbar, Typography, Box, IconButton, Badge,
-  Container, Tooltip, Divider, Button, InputBase, Paper,
-  Avatar, useScrollTrigger, Drawer, List, ListItem, ListItemText
+  Badge,
+  Tooltip, Divider,
+  Avatar, Drawer, List, ListItem, ListItemText
 } from '@mui/material'
 import {
   Search as SearchIcon, FavoriteBorder as FavoriteIcon,
@@ -27,15 +27,15 @@ function AnnouncementBar() {
   ]
   const text = items.join('     ·     ')
   return (
-    <Box sx={{ bgcolor: '#131b2e', color: 'white', py: 0.75, overflow: 'hidden', position: 'relative' }}>
-      <div className="marquee-track" style={{ gap: '0px' }}>
+    <div className="bg-[#131b2e] text-white py-2 overflow-hidden relative">
+      <div className="flex animate-marquee whitespace-nowrap">
         {[text, text].map((t, i) => (
-          <Typography key={i} variant="caption" sx={{ whiteSpace: 'nowrap', px: 4, fontWeight: 700, letterSpacing: '0.08em', fontSize: '0.72rem' }}>
+          <span key={i} className="px-8 text-[10px] font-black tracking-widest uppercase">
             {t}
-          </Typography>
+          </span>
         ))}
       </div>
-    </Box>
+    </div>
   )
 }
 
@@ -56,42 +56,40 @@ function LiveSearch({ onClose }) {
   }, [query, allProducts])
 
   return (
-    <Box sx={{ position: 'relative', flex: 1, maxWidth: 480 }}>
-      <Paper sx={{
-        display: 'flex', alignItems: 'center', px: 2, py: 0.5, borderRadius: '12px',
-        border: '2px solid', borderColor: 'primary.main', bgcolor: 'background.default',
-        boxShadow: '0 4px 20px rgba(42,20,180,0.15)'
-      }}>
-        <SearchIcon sx={{ color: 'primary.main', mr: 1, fontSize: 20 }} />
-        <InputBase
+    <div className="relative flex-1 max-w-lg">
+      <div className="flex items-center px-4 py-2 bg-white rounded-xl border-2 border-[#131b2e] shadow-lg">
+        <SearchIcon className="text-[#131b2e] mr-3" sx={{ fontSize: 20 }} />
+        <input
           autoFocus
           placeholder="Search for products..."
+          className="flex-1 bg-transparent outline-none text-sm font-bold text-gray-900"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          sx={{ flex: 1, fontSize: '0.9375rem', fontWeight: 500 }}
         />
-        <IconButton size="small" onClick={onClose}><CloseIcon fontSize="small" /></IconButton>
-      </Paper>
+        <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+          <CloseIcon sx={{ fontSize: 18 }} />
+        </button>
+      </div>
       {results.length > 0 && (
-        <Paper sx={{
-          position: 'absolute', top: '110%', left: 0, right: 0, zIndex: 1400,
-          borderRadius: '12px', overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(19,27,46,0.12)', border: '1px solid', borderColor: 'outlineVariant'
-        }}>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[1500]">
           {results.map(p => (
-            <Box key={p.id} onClick={() => { navigate(`/product/${p.id}`); onClose(); setQuery('') }}
-              sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2.5, py: 1.5, cursor: 'pointer',
-                '&:hover': { bgcolor: 'surface.containerLow' }, borderBottom: '1px solid', borderColor: 'outlineVariant', '&:last-child': { borderBottom: 'none' } }}>
-              <Avatar variant="rounded" src={p.image} sx={{ width: 44, height: 52, bgcolor: 'white', '& img': { objectFit: 'contain', p: 0.5 } }} />
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</Typography>
-                <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 800 }}>${p.price.toFixed(2)}</Typography>
-              </Box>
-            </Box>
+            <div 
+              key={p.id} 
+              onClick={() => { navigate(`/product/${p.id}`); onClose(); setQuery('') }}
+              className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50 border-b border-gray-50 last:border-none transition-colors"
+            >
+              <div className="w-12 h-14 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center p-1">
+                <img src={p.thumbnail} alt="" className="max-w-full max-h-full object-contain" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-black text-gray-900 truncate">{p.title}</h4>
+                <span className="text-xs font-black text-[#131b2e]">${p.price.toFixed(2)}</span>
+              </div>
+            </div>
           ))}
-        </Paper>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
 
@@ -103,8 +101,13 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 0 })
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const navLinks = [
     { label: 'Home', path: '/' },
@@ -116,107 +119,121 @@ export default function Navbar() {
   return (
     <>
       <AnnouncementBar />
-      <Box sx={{ position: 'sticky', top: 0, zIndex: 1100, transition: 'all 0.3s', ...(trigger ? { boxShadow: '0 4px 24px rgba(19,27,46,0.10)' } : {}) }}>
-        <AppBar position="static" sx={{
-          bgcolor: dark ? 'rgba(15,22,41,0.92)' : 'rgba(250,248,255,0.92)',
-          backdropFilter: 'blur(24px)', color: 'text.primary', boxShadow: 'none',
-          borderBottom: '1px solid', borderColor: 'outlineVariant', transition: 'background-color 0.3s'
-        }}>
-          <Container maxWidth="xl">
+      <nav className={`sticky top-0 z-[1100] transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-xl shadow-lg py-2' : 'bg-white py-4'} border-b border-gray-100`}>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-12">
             {searchOpen ? (
-              <Toolbar disableGutters sx={{ height: 72, gap: 2 }}>
-                <LiveSearch onClose={() => setSearchOpen(false)} />
-              </Toolbar>
+              <LiveSearch onClose={() => setSearchOpen(false)} />
             ) : (
-              <Toolbar disableGutters sx={{ height: 72, justifyContent: 'space-between' }}>
+              <>
                 {/* Logo */}
-                <Typography variant="h6" component={NavLink} to="/" sx={{
-                  fontWeight: 900, letterSpacing: '0.12em', color: 'inherit',
-                  textDecoration: 'none', fontSize: '1.4rem', fontFamily: '"Playfair Display", serif'
-                }}>
+                <NavLink to="/" className="text-2xl font-black tracking-widest font-serif text-gray-900">
                   ATELIER
-                </Typography>
+                </NavLink>
 
                 {/* Nav Links */}
-                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+                <div className="hidden md:flex items-center gap-10">
                   {navLinks.map(link => (
-                    <NavLink key={link.path} to={link.path} style={({ isActive }) => ({
-                      textDecoration: 'none', color: 'inherit', fontSize: '0.8rem', fontWeight: 700,
-                      textTransform: 'uppercase', letterSpacing: '0.1em',
-                      borderBottom: isActive ? '2px solid #2a14b4' : '2px solid transparent',
-                      paddingBottom: '4px', transition: 'all 0.2s'
-                    })}>
+                    <NavLink 
+                      key={link.path} 
+                      to={link.path} 
+                      className={({ isActive }) => `text-[11px] font-black uppercase tracking-widest transition-all pb-1 border-b-2 ${isActive ? 'border-[#131b2e] text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-900'}`}
+                    >
                       {link.label}
                     </NavLink>
                   ))}
-                </Box>
+                </div>
 
                 {/* Actions */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1.5 } }}>
+                <div className="flex items-center gap-2 md:gap-4">
                   <Tooltip title="Search">
-                    <IconButton onClick={() => setSearchOpen(true)} color="inherit" size="small" sx={{ '& svg': { fontSize: '1.35rem' } }}>
-                      <SearchIcon />
-                    </IconButton>
+                    <button onClick={() => setSearchOpen(true)} className="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                      <SearchIcon sx={{ fontSize: 22 }} />
+                    </button>
                   </Tooltip>
+                  
                   <Tooltip title="Wishlist">
-                    <IconButton color="inherit" size="small" component={NavLink} to="/wishlist" sx={{ '& svg': { fontSize: '1.35rem' } }}>
-                      <Badge badgeContent={wishlist.length} color="primary"><FavoriteIcon /></Badge>
-                    </IconButton>
+                    <NavLink to="/wishlist" className="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                      <Badge badgeContent={wishlist.length} color="primary" sx={{ '& .MuiBadge-badge': { bgcolor: '#131b2e' } }}>
+                        <FavoriteIcon sx={{ fontSize: 22 }} />
+                      </Badge>
+                    </NavLink>
                   </Tooltip>
+
                   <Tooltip title="Cart">
-                    <IconButton color="inherit" size="small" component={NavLink} to="/cart" sx={{ '& svg': { fontSize: '1.35rem' } }}>
-                      <Badge badgeContent={totalCount} color="primary"><CartIcon /></Badge>
-                    </IconButton>
+                    <NavLink to="/cart" className="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                      <Badge badgeContent={totalCount} color="primary" sx={{ '& .MuiBadge-badge': { bgcolor: '#131b2e' } }}>
+                        <CartIcon sx={{ fontSize: 22 }} />
+                      </Badge>
+                    </NavLink>
                   </Tooltip>
-                  <Box sx={{ display: { xs: 'none', lg: 'block' }, ml: 0.5 }}>
-                    <Typography variant="caption" sx={{ fontWeight: 900, fontSize: '0.8rem' }}>${totalPrice.toFixed(2)}</Typography>
-                  </Box>
-                  <Divider orientation="vertical" flexItem sx={{ mx: 0.5, height: 22, alignSelf: 'center' }} />
+
+                  <div className="hidden lg:block">
+                    <span className="text-xs font-black text-gray-900">${totalPrice.toFixed(2)}</span>
+                  </div>
+
+                  <Divider orientation="vertical" flexItem className="mx-2 h-6 self-center hidden sm:block" />
+
                   <Tooltip title="Toggle Theme">
-                    <IconButton onClick={toggle} color="inherit" size="small" sx={{ '& svg': { fontSize: '1.35rem' } }}>
-                      {dark ? <LightModeIcon /> : <DarkModeIcon />}
-                    </IconButton>
+                    <button onClick={toggle} className="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                      {dark ? <LightModeIcon sx={{ fontSize: 22 }} /> : <DarkModeIcon sx={{ fontSize: 22 }} />}
+                    </button>
                   </Tooltip>
+
                   {user ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>{user.name}</Typography>
-                      <Button onClick={() => { logout(); navigate('/') }} sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'primary.main', minWidth: 'auto', px: 1.5 }}>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-black text-gray-900 hidden sm:block">{user.name}</span>
+                      <button 
+                        onClick={() => { logout(); navigate('/') }} 
+                        className="text-[10px] font-black text-[#131b2e] hover:underline tracking-widest"
+                      >
                         LOGOUT
-                      </Button>
-                    </Box>
+                      </button>
+                    </div>
                   ) : (
                     <Tooltip title="Login">
-                      <IconButton component={NavLink} to="/login" color="inherit" size="small" sx={{ '& svg': { fontSize: '1.35rem' } }}>
-                        <UserIcon />
-                      </IconButton>
+                      <NavLink to="/login" className="p-2 text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                        <UserIcon sx={{ fontSize: 22 }} />
+                      </NavLink>
                     </Tooltip>
                   )}
-                  <IconButton sx={{ display: { xs: 'flex', md: 'none' } }} onClick={() => setMobileOpen(true)} color="inherit" size="small">
+
+                  <button className="md:hidden p-2 text-gray-900" onClick={() => setMobileOpen(true)}>
                     <MenuIcon />
-                  </IconButton>
-                </Box>
-              </Toolbar>
+                  </button>
+                </div>
+              </>
             )}
-          </Container>
-        </AppBar>
-      </Box>
+          </div>
+        </div>
+      </nav>
 
       {/* Mobile Drawer */}
       <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        <Box sx={{ width: 260, p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: '"Playfair Display", serif' }}>ATELIER</Typography>
-            <IconButton onClick={() => setMobileOpen(false)}><CloseIcon /></IconButton>
-          </Box>
-          <List>
+        <div className="w-72 p-8">
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-2xl font-black font-serif tracking-widest">ATELIER</h2>
+            <button onClick={() => setMobileOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
+              <CloseIcon />
+            </button>
+          </div>
+          <List className="flex flex-col gap-2">
             {[...navLinks, { label: 'Cart', path: '/cart' }, { label: 'Login', path: '/login' }].map(l => (
-              <ListItem key={l.path} component={NavLink} to={l.path} onClick={() => setMobileOpen(false)}
-                sx={{ borderRadius: '8px', mb: 0.5, textDecoration: 'none', color: 'inherit', '&:hover': { bgcolor: 'surface.containerLow' } }}>
-                <ListItemText primary={l.label} primaryTypographyProps={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '0.08em' }} />
+              <ListItem 
+                key={l.path} 
+                component={NavLink} 
+                to={l.path} 
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <ListItemText 
+                  primary={l.label} 
+                  primaryTypographyProps={{ className: "font-black uppercase text-xs tracking-[0.2em] text-gray-900" }} 
+                />
               </ListItem>
             ))}
           </List>
-        </Box>
+        </div>
       </Drawer>
     </>
   )

@@ -1,29 +1,20 @@
-import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
   Rating,
-  Stack,
-  Divider,
+  Button,
   Skeleton,
   IconButton,
-  Chip,
-  Tab,
-  Tabs,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import {
   FavoriteBorder as WishlistIcon,
   Favorite as WishlistFilledIcon,
   ShoppingBagOutlined as CartIcon,
   ArrowBack as BackIcon,
-  Star as StarIcon,
   LocalShipping as ShipIcon,
   Refresh as ReturnIcon,
   Shield as ShieldIcon,
+  AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import useFetchProduct from "../hooks/useFetchProduct";
 import { useCart } from "../context/CartContext";
@@ -31,7 +22,8 @@ import { useWishlist } from "../context/WishlistContext";
 import { useToast } from "../context/ToastContext";
 import QuantityControl from "../components/QuantityControl";
 import Breadcrumbs from "../components/Breadcrumbs";
-import Footer from "../components/Footer";
+
+const NOSEJ_LOCATION = [30.0444, 31.2357]; // Central Cairo
 
 const TRUST_ITEMS = [
   {
@@ -59,8 +51,44 @@ export default function ProductDetail() {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
   const [qty, setQty] = useState(1);
-  const [tab, setTab] = useState(0);
+  const [mainImage, setMainImage] = useState("");
   const [imgError, setImgError] = useState(false);
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
+
+  useEffect(() => {
+    if (product?.images?.length > 0) {
+      setMainImage(product.images[0]);
+    } else if (product?.thumbnail) {
+      setMainImage(product.thumbnail);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        
+        // Simple distance calculation (Haversine formula simplified)
+        const R = 6371; // km
+        const dLat = (latitude - NOSEJ_LOCATION[0]) * Math.PI / 180;
+        const dLon = (longitude - NOSEJ_LOCATION[1]) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(NOSEJ_LOCATION[0] * Math.PI / 180) * Math.cos(latitude * Math.PI / 180) * 
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+
+        if (distance < 50) {
+          setDeliveryInfo({ text: "Get it by Tomorrow", sub: "Fast delivery in Cairo", color: "text-green-600" });
+        } else {
+          setDeliveryInfo({ text: "Delivery in 2-3 Days", sub: "Standard shipping to your location", color: "text-blue-600" });
+        }
+      }, () => {
+        // Default if geolocation fails
+        setDeliveryInfo({ text: "Standard Delivery", sub: "Ships in 2-5 business days", color: "text-gray-500" });
+      });
+    }
+  }, []);
 
   const handleAdd = () => {
     addItem(product, qty);
@@ -77,223 +105,164 @@ export default function ProductDetail() {
 
   if (error)
     return (
-      <Box
-        sx={{
-          minHeight: "60vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          gap: 3,
-        }}
-      >
-        <Typography variant="h5" color="error" fontWeight={900}>
-          Product not found
-        </Typography>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
+        <h2 className="text-2xl text-red-600 font-black">Product not found</h2>
         <Button variant="contained" onClick={() => navigate("/shop")}>
           Back to Shop
         </Button>
-      </Box>
+      </div>
     );
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+    <div className="bg-white min-h-screen">
       {/* Header */}
-      <Box sx={{ bgcolor: "surface.containerLow", py: 5 }}>
-        <Container maxWidth="xl">
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4">
           <Breadcrumbs title={product?.title?.slice(0, 30)} />
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 8 }}>
-        <Button
-          startIcon={<BackIcon />}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <button
           onClick={() => navigate("/shop")}
-          sx={{
-            mb: 5,
-            fontWeight: 800,
-            fontSize: "0.78rem",
-            color: "text.secondary",
-            "&:hover": { color: "primary.main" },
-          }}
+          className="flex items-center gap-2 mb-10 font-extrabold text-xs text-gray-500 hover:text-[#131b2e] transition-colors uppercase tracking-widest"
         >
+          <BackIcon fontSize="small" />
           BACK TO COLLECTION
-        </Button>
+        </button>
 
-        <Grid container spacing={8}>
-          {/* Image */}
-          <Grid size={{ xs: 12, md: 6 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          {/* Image Gallery */}
+          <div className="flex flex-col gap-4">
             {loading ? (
               <Skeleton
                 variant="rectangular"
-                sx={{ borderRadius: "24px", height: 560 }}
+                className="rounded-3xl h-[560px] w-full"
               />
             ) : (
-              <Box
-                sx={{
-                  position: "relative",
-                  borderRadius: "24px",
-                  overflow: "hidden",
-                  bgcolor: "white",
-                  border: "1px solid",
-                  borderColor: "outlineVariant",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 520,
-                  p: 6,
-                }}
-              >
-                <Box
-                  component="img"
-                  src={
-                    imgError
-                      ? "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=800"
-                      : product?.thumbnail || product?.image
-                  }
-                  alt={product?.title}
-                  onError={() => setImgError(true)}
-                  loading="lazy"
-                  sx={{
-                    maxWidth: "100%",
-                    maxHeight: 440,
-                    objectFit: "contain",
-                    transition: "transform 0.4s ease",
-                    "&:hover": { transform: "scale(1.04)" },
-                  }}
-                />
-                {product?.id % 5 === 0 && (
-                  <Chip
-                    label="SALE"
-                    color="error"
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 16,
-                      left: 16,
-                      fontWeight: 900,
-                      borderRadius: "6px",
-                    }}
+              <>
+                <div className="relative rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center min-h-[520px] p-12">
+                  <img
+                    src={imgError ? "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=800" : mainImage}
+                    alt={product?.title}
+                    onError={() => setImgError(true)}
+                    className="max-w-full max-h-[440px] object-contain transition-transform duration-500 hover:scale-105"
                   />
-                )}
-                <IconButton
-                  onClick={handleWishlist}
-                  sx={{
-                    position: "absolute",
-                    top: 16,
-                    right: 16,
-                    bgcolor: "white",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
-                    "&:hover": { bgcolor: "primary.main", color: "white" },
-                  }}
-                >
-                  {isInWishlist(product?.id) ? (
-                    <WishlistFilledIcon sx={{ color: "error.main" }} />
-                  ) : (
-                    <WishlistIcon />
+                  {product?.discountPercentage > 10 && (
+                    <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-md uppercase">
+                      SALE
+                    </span>
                   )}
-                </IconButton>
-              </Box>
+                  <IconButton
+                    onClick={handleWishlist}
+                    className="absolute top-4 right-4 bg-white shadow-lg hover:bg-[#131b2e] hover:text-white"
+                    sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#131b2e', color: 'white' } }}
+                  >
+                    {isInWishlist(product?.id) ? (
+                      <WishlistFilledIcon className="text-red-500" />
+                    ) : (
+                      <WishlistIcon />
+                    )}
+                  </IconButton>
+                </div>
+                
+                {/* Thumbnails */}
+                {product?.images?.length > 1 && (
+                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                    {product.images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setMainImage(img)}
+                        className={`relative flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-2 transition-all ${
+                          mainImage === img ? "border-[#131b2e]" : "border-transparent bg-gray-50"
+                        }`}
+                      >
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
-          </Grid>
+          </div>
 
           {/* Info */}
-          <Grid size={{ xs: 12, md: 6 }}>
+          <div className="flex flex-col gap-8">
             {loading ? (
-              <Stack spacing={2}>
-                <Skeleton height={32} width="60%" />
-                <Skeleton height={48} />
-                <Skeleton height={28} width="40%" />
-                <Skeleton height={80} />
-              </Stack>
+              <div className="flex flex-col gap-4">
+                <Skeleton height={32} width="40%" />
+                <Skeleton height={60} width="90%" />
+                <Skeleton height={30} width="30%" />
+                <Skeleton height={120} />
+              </div>
             ) : (
-              <Stack spacing={3}>
-                <Box>
-                  <Typography
-                    variant="overline"
-                    sx={{
-                      color: "primary.main",
-                      fontWeight: 800,
-                      letterSpacing: "0.15em",
-                    }}
-                  >
+              <>
+                <div>
+                  <span className="text-[#131b2e] font-black text-[10px] tracking-[0.2em] uppercase">
                     {product?.category}
-                  </Typography>
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      fontWeight: 900,
-                      lineHeight: 1.25,
-                      mt: 0.5,
-                      fontFamily: '"Playfair Display", serif',
-                    }}
-                  >
+                  </span>
+                  <h1 className="text-5xl font-black leading-tight mt-2 font-serif text-gray-900">
                     {product?.title}
-                  </Typography>
-                </Box>
+                  </h1>
+                </div>
 
-                <Stack direction="row" spacing={1.5} alignItems="center">
+                <div className="flex items-center gap-4">
                   <Rating
-                    value={product?.rating?.rate ?? 4.5}
+                    value={product?.rating ?? 4.5}
                     readOnly
-                    precision={0.5}
+                    precision={0.1}
                     sx={{ color: "#FBBF24" }}
                   />
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "text.secondary", fontWeight: 700 }}
-                  >
-                    {product?.rating?.rate} ({product?.rating?.count} reviews)
-                  </Typography>
-                </Stack>
+                  <span className="text-gray-500 font-bold text-sm">
+                    {product?.rating} ({product?.stock} in stock)
+                  </span>
+                </div>
 
-                <Box sx={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-                  <Typography
-                    variant="h3"
-                    sx={{ fontWeight: 900, color: "primary.main" }}
-                  >
-                    ${product?.price?.toFixed(2)}
-                  </Typography>
-                  {product?.id % 5 === 0 && (
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: "text.disabled",
-                        textDecoration: "line-through",
-                        fontWeight: 600,
-                      }}
-                    >
-                      ${(product?.price * 1.4).toFixed(2)}
-                    </Typography>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-4xl font-black text-[#131b2e]">
+                      ${product?.price?.toFixed(2)}
+                    </span>
+                    {product?.discountPercentage > 10 && (
+                      <span className="text-xl text-gray-400 line-through font-bold">
+                        ${(product?.price / (1 - product.discountPercentage / 100)).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Delivery Estimation Label */}
+                  {deliveryInfo && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <TimeIcon className={deliveryInfo.color} sx={{ fontSize: 16 }} />
+                      <div>
+                        <span className={`text-xs font-black uppercase tracking-wider ${deliveryInfo.color}`}>
+                          {deliveryInfo.text}
+                        </span>
+                        <p className="text-[10px] font-bold text-gray-400">{deliveryInfo.sub}</p>
+                      </div>
+                    </div>
                   )}
-                </Box>
+                </div>
 
-                <Divider />
+                <hr className="border-gray-100" />
 
-                <Typography
-                  variant="body1"
-                  sx={{ color: "text.secondary", lineHeight: 1.9 }}
-                >
+                <p className="text-gray-500 leading-relaxed text-lg">
                   {product?.description}
-                </Typography>
+                </p>
 
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 800, minWidth: 70 }}
-                  >
-                    QTY
-                  </Typography>
+                <div className="flex items-center gap-6">
+                  <span className="font-black text-xs tracking-widest text-gray-900">QTY</span>
                   <QuantityControl value={qty} onChange={setQty} size="md" />
-                </Stack>
+                </div>
 
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     variant="contained"
                     size="large"
                     startIcon={<CartIcon />}
                     onClick={handleAdd}
-                    sx={{ flex: 1, py: 2, fontWeight: 900, fontSize: "0.9rem" }}
+                    className="flex-1 py-4 bg-[#131b2e] hover:bg-black font-black text-sm tracking-widest rounded-xl"
+                    sx={{ bgcolor: '#131b2e', '&:hover': { bgcolor: 'black' } }}
                   >
                     ADD TO CART
                   </Button>
@@ -303,149 +272,35 @@ export default function ProductDetail() {
                     onClick={handleWishlist}
                     startIcon={
                       isInWishlist(product?.id) ? (
-                        <WishlistFilledIcon sx={{ color: "error.main" }} />
+                        <WishlistFilledIcon className="text-red-500" />
                       ) : (
                         <WishlistIcon />
                       )
                     }
-                    sx={{ px: 3, py: 2, fontWeight: 800 }}
+                    className="px-8 py-4 border-2 border-gray-200 hover:border-[#131b2e] font-black text-sm tracking-widest rounded-xl"
+                    sx={{ borderColor: '#e5e7eb', color: '#131b2e', '&:hover': { borderColor: '#131b2e' } }}
                   >
                     WISHLIST
                   </Button>
-                </Stack>
+                </div>
 
                 {/* Trust badges */}
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", pt: 1 }}>
+                <div className="flex gap-6 flex-wrap pt-4">
                   {TRUST_ITEMS.map((t) => (
-                    <Stack
-                      key={t.label}
-                      direction="row"
-                      spacing={1}
-                      alignItems="center"
-                      sx={{
-                        p: 1.5,
-                        borderRadius: "10px",
-                        bgcolor: "surface.containerLow",
-                        flex: "1 1 120px",
-                      }}
-                    >
-                      <Box sx={{ color: "primary.main" }}>{t.icon}</Box>
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontWeight: 800,
-                            display: "block",
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          {t.label}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "text.secondary", fontSize: "0.68rem" }}
-                        >
-                          {t.sub}
-                        </Typography>
-                      </Box>
-                    </Stack>
+                    <div key={t.label} className="flex items-center gap-3 bg-gray-50 px-4 py-3 rounded-2xl border border-gray-100">
+                      <div className="text-[#131b2e]">{t.icon}</div>
+                      <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-wider text-gray-900">{t.label}</h4>
+                        <p className="text-[9px] font-bold text-gray-500">{t.sub}</p>
+                      </div>
+                    </div>
                   ))}
-                </Box>
-
-                <Divider />
-
-                <Stack direction="row" spacing={4}>
-                  {[
-                    { label: "SKU", val: `ATL-00${product?.id}` },
-                    { label: "CATEGORY", val: product?.category },
-                  ].map((x) => (
-                    <Box key={x.label}>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        sx={{
-                          fontWeight: 800,
-                          color: "text.primary",
-                          mb: 0.25,
-                        }}
-                      >
-                        {x.label}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: "text.secondary",
-                          fontWeight: 600,
-                          textTransform: "capitalize",
-                        }}
-                      >
-                        {x.val}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-
-                {/* Tabs */}
-                <Box
-                  sx={{ borderTop: 1, borderColor: "outlineVariant", pt: 4 }}
-                >
-                  <Tabs
-                    value={tab}
-                    onChange={(_, v) => setTab(v)}
-                    sx={{
-                      mb: 3,
-                      "& .MuiTab-root": {
-                        fontWeight: 800,
-                        fontSize: "0.78rem",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                      },
-                    }}
-                  >
-                    <Tab label="Description" />
-                    <Tab label="Reviews" />
-                    <Tab label="Shipping" />
-                  </Tabs>
-                  <Box sx={{ minHeight: 80 }}>
-                    {tab === 0 && (
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", lineHeight: 1.9 }}
-                      >
-                        High-quality craftsmanship meeting contemporary design.
-                        This piece from our digital atelier is crafted using
-                        sustainable practices and premium materials. Each item
-                        is inspected for perfection before being archived and
-                        shipped.
-                      </Typography>
-                    )}
-                    {tab === 1 && (
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", lineHeight: 1.9 }}
-                      >
-                        No reviews yet. Be the first to share your experience
-                        with this piece — your feedback helps our community.
-                      </Typography>
-                    )}
-                    {tab === 2 && (
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", lineHeight: 1.9 }}
-                      >
-                        Complimentary global shipping on orders over $150.
-                        Returns accepted within 30 days in original condition.
-                        Express delivery available at checkout.
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
-              </Stack>
+                </div>
+              </>
             )}
-          </Grid>
-        </Grid>
-      </Container>
-      <Footer />
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

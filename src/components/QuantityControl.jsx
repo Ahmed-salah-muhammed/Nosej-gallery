@@ -1,4 +1,3 @@
-import { Box, IconButton, InputBase, Typography } from '@mui/material'
 import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material'
 
 export default function QuantityControl({ value, onChange, min = 1, size = 'md' }) {
@@ -14,62 +13,29 @@ export default function QuantityControl({ value, onChange, min = 1, size = 'md' 
   const isSmall = size === 'sm'
 
   return (
-    <Box
-      sx={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        bgcolor: 'surface.containerLow',
-        borderRadius: '8px',
-        px: isSmall ? 0.5 : 1,
-        py: isSmall ? 0.25 : 0.5,
-        border: '1px solid',
-        borderColor: 'outlineVariant',
-        transition: 'all 0.2s',
-        '&:hover': {
-          borderColor: 'primary.main',
-          bgcolor: 'background.paper'
-        }
-      }}
-    >
-      <IconButton
+    <div className={`inline-flex items-center bg-gray-50 rounded-xl border border-gray-100 transition-all hover:border-[#131b2e] hover:bg-white ${isSmall ? 'px-1 py-0.5' : 'px-2 py-1'}`}>
+      <button
         onClick={() => onChange(Math.max(min, value - 1))}
-        size="small"
-        sx={{
-          p: isSmall ? 0.5 : 1,
-          color: 'text.primary',
-          '&:hover': { color: 'primary.main' }
-        }}
+        className={`p-1 text-gray-900 hover:text-[#131b2e] transition-colors ${isSmall ? 'p-1' : 'p-2'}`}
       >
         <RemoveIcon sx={{ fontSize: isSmall ? 14 : 18 }} />
-      </IconButton>
+      </button>
 
-      <InputBase
+      <input
+        type="text"
         value={value}
         onChange={handleInput}
         onBlur={handleBlur}
-        inputProps={{
-          'aria-label': 'quantity',
-          style: {
-            textAlign: 'center',
-            fontWeight: 800,
-            fontSize: isSmall ? '0.75rem' : '0.875rem',
-            width: isSmall ? 24 : 32,
-            padding: 0
-          }
-        }}
+        className={`bg-transparent text-center font-black outline-none ${isSmall ? 'text-xs w-6' : 'text-sm w-8'}`}
+        aria-label="quantity"
       />
 
-      <IconButton
+      <button
         onClick={() => onChange(value + 1)}
-        size="small"
-        sx={{
-          p: isSmall ? 0.5 : 1,
-          color: 'text.primary',
-          '&:hover': { color: 'primary.main' }
-        }}
+        className={`p-1 text-gray-900 hover:text-[#131b2e] transition-colors ${isSmall ? 'p-1' : 'p-2'}`}
       >
         <AddIcon sx={{ fontSize: isSmall ? 14 : 18 }} />
-      </IconButton>
-    </Box>
+      </button>
+    </div>
   )
 }

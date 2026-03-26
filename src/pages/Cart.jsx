@@ -1,12 +1,11 @@
 import { useNavigate, Link } from 'react-router-dom'
 import {
-  Box, Container, Typography, IconButton, Button, Stack,
-  Divider, Paper, Avatar, Chip
+  IconButton, Button,
+  Divider, Chip
 } from '@mui/material'
-import Grid2 from '@mui/material/Grid2'
 import {
   Close as CloseIcon, ShoppingBagOutlined as ShoppingIcon,
-  ArrowBack as ArrowBackIcon, LocalShipping as ShippingIcon,
+  ArrowBack as ArrowBackIcon,
   Lock as LockIcon, Refresh as RefreshIcon
 } from '@mui/icons-material'
 import { useCart } from '../context/CartContext'
@@ -16,44 +15,40 @@ import Footer from '../components/Footer'
 
 function CartItemRow({ product, qty }) {
   const { removeItem, updateQty } = useCart()
-  const isSale = product.id % 5 === 0
+  const isSale = product.discountPercentage > 10
   return (
-    <Box sx={{
-      display: 'flex', gap: { xs: 2, md: 3 }, py: 3,
-      borderBottom: '1px solid', borderColor: 'outlineVariant',
-      alignItems: { xs: 'flex-start', sm: 'center' },
-      flexDirection: { xs: 'column', sm: 'row' }
-    }}>
-      <Avatar variant="rounded" src={product.image}
-        sx={{ width: 88, height: 104, bgcolor: 'white', border: '1px solid', borderColor: 'outlineVariant', flexShrink: 0, '& img': { objectFit: 'contain', p: 1 } }} />
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1, mb: 0.75 }}>
-          <Typography variant="body2" sx={{ fontWeight: 800, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+    <div className="flex flex-col sm:flex-row gap-6 py-8 border-b border-gray-100 last:border-none items-start sm:items-center">
+      <div className="w-24 h-28 bg-gray-50 rounded-2xl border border-gray-100 flex-shrink-0 flex items-center justify-center p-2">
+        <img src={product.thumbnail} alt={product.title} className="max-w-full max-h-full object-contain" />
+      </div>
+      <div className="flex-1 min-w-0 w-full">
+        <div className="flex justify-between items-start gap-4 mb-2">
+          <h3 className="font-black text-sm text-gray-900 leading-snug line-clamp-2">
             {product.title}
-          </Typography>
-          <IconButton size="small" onClick={() => removeItem(product.id)}
-            sx={{ flexShrink: 0, color: 'text.disabled', '&:hover': { color: 'error.main', bgcolor: 'error.50' } }}>
+          </h3>
+          <button 
+            onClick={() => removeItem(product.id)}
+            className="p-1 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
+          >
             <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
-        <Typography variant="caption" sx={{ textTransform: 'capitalize', color: 'text.secondary', fontWeight: 600, display: 'block', mb: 1.5 }}>
+          </button>
+        </div>
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 block">
           {product.category}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        </span>
+        <div className="flex items-center justify-between gap-4">
           <QuantityControl value={qty} onChange={(v) => updateQty(product.id, v)} size="sm" />
-          <Box sx={{ textAlign: 'right' }}>
-            <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary', lineHeight: 1 }}>
-              ${(product.price * qty).toFixed(2)}
-            </Typography>
+          <div className="text-right">
+            <span className="block font-black text-lg text-gray-900">${(product.price * qty).toFixed(2)}</span>
             {isSale && (
-              <Typography variant="caption" sx={{ color: 'text.disabled', textDecoration: 'line-through' }}>
-                ${(product.price * 1.4 * qty).toFixed(2)}
-              </Typography>
+              <span className="text-[10px] font-bold text-gray-400 line-through">
+                ${(product.price / (1 - product.discountPercentage / 100) * qty).toFixed(2)}
+              </span>
             )}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -62,27 +57,28 @@ export default function Cart() {
   const navigate = useNavigate()
 
   if (items.length === 0) return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 7 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5, fontFamily: '"Playfair Display", serif' }}>Shopping Cart</Typography>
+    <div className="bg-white min-h-screen">
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">Shopping Cart</h1>
           <Breadcrumbs />
-        </Container>
-      </Box>
-      <Box sx={{ minHeight: '55vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-        <Stack spacing={4} alignItems="center">
-          <ShoppingIcon sx={{ fontSize: 88, color: 'text.disabled', opacity: 0.4 }} />
-          <Typography variant="h4" sx={{ fontWeight: 900 }}>Your Cart is Empty</Typography>
-          <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 360 }}>
-            There are no pieces in your archive yet. Discover our curated collection.
-          </Typography>
-          <Button variant="contained" size="large" onClick={() => navigate('/shop')} sx={{ px: 5, py: 1.75 }}>
-            GO TO SHOP
-          </Button>
-        </Stack>
-      </Box>
+        </div>
+      </div>
+      <div className="min-h-[55vh] flex flex-col items-center justify-center text-center px-4">
+        <ShoppingIcon className="text-gray-100 text-9xl mb-8" />
+        <h2 className="text-3xl font-black text-gray-900 mb-4">Your Cart is Empty</h2>
+        <p className="text-gray-500 max-w-sm mb-10">
+          There are no pieces in your archive yet. Discover our curated collection.
+        </p>
+        <button 
+          onClick={() => navigate('/shop')}
+          className="px-12 py-4 bg-[#131b2e] text-white font-black text-sm tracking-widest rounded-xl hover:bg-black transition-all"
+        >
+          GO TO SHOP
+        </button>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 
   const shipping = totalPrice >= 150 ? 0 : 9.99
@@ -90,110 +86,120 @@ export default function Cart() {
   const grandTotal = totalPrice + shipping + tax
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <div className="bg-white min-h-screen">
       {/* Header */}
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 7 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5, fontFamily: '"Playfair Display", serif' }}>Shopping Cart</Typography>
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">Shopping Cart</h1>
           <Breadcrumbs />
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 8 }}>
-        <Grid2 container spacing={5}>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Items List */}
-          <Grid2 size={{ xs: 12, lg: 8 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 900 }}>
+          <div className="lg:col-span-8">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black text-gray-900">
                 {totalCount} {totalCount === 1 ? 'Item' : 'Items'}
-              </Typography>
-              <Button size="small" startIcon={<RefreshIcon />} onClick={clearCart}
-                sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary', '&:hover': { color: 'error.main' } }}>
-                CLEAR CART
-              </Button>
-            </Box>
+              </h2>
+              <button 
+                onClick={clearCart}
+                className="flex items-center gap-2 text-[10px] font-black text-gray-400 hover:text-red-600 transition-colors tracking-widest"
+              >
+                <RefreshIcon sx={{ fontSize: 14 }} /> CLEAR CART
+              </button>
+            </div>
 
-            <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: '20px', bgcolor: 'background.paper', border: '1px solid', borderColor: 'outlineVariant' }}>
+            <div className="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm">
               {items.map(({ product, qty }) => (
                 <CartItemRow key={product.id} product={product} qty={qty} />
               ))}
-            </Paper>
+            </div>
 
-            <Box sx={{ mt: 3 }}>
-              <Button variant="outlined" onClick={() => navigate('/shop')} startIcon={<ArrowBackIcon />} sx={{ fontWeight: 800, px: 3 }}>
-                CONTINUE SHOPPING
-              </Button>
-            </Box>
-          </Grid2>
+            <div className="mt-8">
+              <button 
+                onClick={() => navigate('/shop')}
+                className="flex items-center gap-2 text-[11px] font-black text-gray-500 hover:text-[#131b2e] transition-colors tracking-widest"
+              >
+                <ArrowBackIcon sx={{ fontSize: 16 }} /> CONTINUE SHOPPING
+              </button>
+            </div>
+          </div>
 
           {/* Sticky Order Summary */}
-          <Grid2 size={{ xs: 12, lg: 4 }}>
-            <Box sx={{ position: { lg: 'sticky' }, top: 120 }}>
-              <Paper sx={{ p: 4, borderRadius: '20px', bgcolor: 'surface.containerLow', border: '1px solid', borderColor: 'outlineVariant' }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, mb: 4 }}>Order Summary</Typography>
+          <div className="lg:col-span-4">
+            <div className="sticky top-32">
+              <div className="bg-gray-50 rounded-[32px] border border-gray-100 p-10 shadow-sm">
+                <h2 className="text-2xl font-black text-gray-900 mb-8">Order Summary</h2>
 
                 {/* Free Shipping Progress */}
                 {shipping > 0 && (
-                  <Box sx={{ mb: 3, p: 2, bgcolor: 'background.paper', borderRadius: '12px', border: '1px dashed', borderColor: 'primary.main' }}>
-                    <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.main', display: 'block', mb: 1 }}>
+                  <div className="mb-8 p-6 bg-white rounded-2xl border border-dashed border-[#131b2e]/30">
+                    <p className="text-[10px] font-black text-[#131b2e] mb-3 tracking-wider">
                       🚚 Add ${(150 - totalPrice).toFixed(2)} more for FREE shipping
-                    </Typography>
-                    <Box sx={{ height: 6, bgcolor: 'surface.containerHighest', borderRadius: 3, overflow: 'hidden' }}>
-                      <Box sx={{ height: '100%', bgcolor: 'primary.main', borderRadius: 3, width: `${Math.min((totalPrice / 150) * 100, 100)}%`, transition: 'width 0.5s ease' }} />
-                    </Box>
-                  </Box>
+                    </p>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#131b2e] transition-all duration-500" 
+                        style={{ width: `${Math.min((totalPrice / 150) * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
 
-                <Stack spacing={2.5} sx={{ mb: 4 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>Subtotal ({totalCount} items)</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>${totalPrice.toFixed(2)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>Estimated Tax</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>${tax.toFixed(2)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>Shipping</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800, color: shipping === 0 ? 'success.main' : 'inherit' }}>
+                <div className="flex flex-col gap-5 mb-8">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-bold">Subtotal ({totalCount} items)</span>
+                    <span className="text-gray-900 font-black">${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-bold">Estimated Tax</span>
+                    <span className="text-gray-900 font-black">${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-bold">Shipping</span>
+                    <span className={`font-black ${shipping === 0 ? 'text-green-600' : 'text-gray-900'}`}>
                       {shipping === 0 ? '✓ FREE' : `$${shipping.toFixed(2)}`}
-                    </Typography>
-                  </Box>
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 900 }}>Total</Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: 'primary.main' }}>${grandTotal.toFixed(2)}</Typography>
-                  </Box>
-                </Stack>
+                    </span>
+                  </div>
+                  <hr className="border-dashed border-gray-200" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-black text-gray-900">Total</span>
+                    <span className="text-3xl font-black text-[#131b2e]">${grandTotal.toFixed(2)}</span>
+                  </div>
+                </div>
 
-                <Button variant="contained" size="large" fullWidth onClick={() => navigate('/checkout')}
-                  sx={{ py: 2, fontWeight: 900, mb: 2, fontSize: '0.9rem' }}>
+                <button 
+                  onClick={() => navigate('/checkout')}
+                  className="w-full py-4 bg-[#131b2e] text-white font-black text-sm tracking-widest rounded-xl hover:bg-black transition-all mb-4"
+                >
                   PROCEED TO CHECKOUT
-                </Button>
-                <Button variant="outlined" size="large" fullWidth onClick={() => navigate('/shop')}
-                  sx={{ py: 1.75, fontWeight: 800 }}>
+                </button>
+                <button 
+                  onClick={() => navigate('/shop')}
+                  className="w-full py-4 border-2 border-gray-200 text-gray-900 font-black text-sm tracking-widest rounded-xl hover:border-[#131b2e] transition-all"
+                >
                   CONTINUE SHOPPING
-                </Button>
+                </button>
 
-                <Stack direction="row" spacing={1} alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
-                  <LockIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                    Secured with SSL encryption
-                  </Typography>
-                </Stack>
+                <div className="flex items-center justify-center gap-2 mt-8 text-gray-400">
+                  <LockIcon sx={{ fontSize: 14 }} />
+                  <span className="text-[10px] font-bold tracking-wider uppercase">Secured with SSL encryption</span>
+                </div>
 
                 {/* Payment Icons */}
-                <Stack direction="row" spacing={0.75} justifyContent="center" sx={{ mt: 2, flexWrap: 'wrap', gap: 0.75 }}>
+                <div className="flex flex-wrap justify-center gap-2 mt-6">
                   {['VISA', 'MC', 'PayPal', 'Apple Pay'].map(p => (
-                    <Chip key={p} label={p} size="small" variant="outlined" sx={{ fontWeight: 800, fontSize: '0.62rem', height: 22, borderRadius: '5px' }} />
+                    <span key={p} className="px-3 py-1 border border-gray-200 rounded-md text-[9px] font-black text-gray-400">{p}</span>
                   ))}
-                </Stack>
-              </Paper>
-            </Box>
-          </Grid2>
-        </Grid2>
-      </Container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 }
