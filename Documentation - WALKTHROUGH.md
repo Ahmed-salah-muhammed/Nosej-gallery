@@ -1,4 +1,4 @@
-# ShopWave v2 - Complete Feature Walkthrough Guide
+# NASEJ Gallery v2 - Complete Feature Walkthrough Guide
 
 Welcome to the comprehensive walkthrough of ShopWave v2! This guide will take you through every new feature and enhancement, step-by-step, so you can fully explore and understand the application.
 
