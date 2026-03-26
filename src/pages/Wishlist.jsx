@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  Box, Container, Typography, Button, Stack, IconButton,
-  Chip, Tooltip, Divider
+  Tooltip
 } from '@mui/material'
-import Grid2 from '@mui/material/Grid2'
 import {
   FavoriteBorder as EmptyHeartIcon, ShoppingBagOutlined as CartIcon,
   Delete as DeleteIcon, ArrowForward as ArrowIcon
@@ -27,73 +25,76 @@ export default function Wishlist() {
   }
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <div className="bg-white min-h-screen">
       {/* Header */}
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 7 }}>
-        <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { sm: 'center' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-            <Box>
-              <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5, fontFamily: '"Playfair Display", serif' }}>
-                My Wishlist
-              </Typography>
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div>
+              <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">My Wishlist</h1>
               <Breadcrumbs />
-            </Box>
+            </div>
             {wishlist.length > 0 && (
-              <Stack direction="row" spacing={1.5}>
-                <Button variant="outlined" size="small" startIcon={<DeleteIcon />} onClick={clearWishlist}
-                  sx={{ fontWeight: 800, fontSize: '0.75rem', color: 'error.main', borderColor: 'error.main', '&:hover': { bgcolor: 'error.50', borderColor: 'error.main' } }}>
+              <div className="flex gap-4">
+                <button 
+                  onClick={clearWishlist}
+                  className="px-6 py-3 border-2 border-red-100 text-red-600 font-black text-[10px] tracking-widest rounded-xl hover:bg-red-50 transition-all uppercase"
+                >
                   CLEAR ALL
-                </Button>
-                <Button variant="contained" size="small" startIcon={<CartIcon />} onClick={addAllToCart}
-                  sx={{ fontWeight: 800, fontSize: '0.75rem' }}>
-                  ADD ALL TO CART
-                </Button>
-              </Stack>
+                </button>
+                <button 
+                  onClick={addAllToCart}
+                  className="px-6 py-3 bg-[#131b2e] text-white font-black text-[10px] tracking-widest rounded-xl hover:bg-black transition-all uppercase flex items-center gap-2"
+                >
+                  <CartIcon sx={{ fontSize: 16 }} /> ADD ALL TO CART
+                </button>
+              </div>
             )}
-          </Box>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 8 }}>
+      <div className="max-w-7xl mx-auto px-4 py-16">
         {wishlist.length === 0 ? (
-          <Box sx={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-            <Stack spacing={4} alignItems="center">
-              <EmptyHeartIcon sx={{ fontSize: 88, color: 'text.disabled', opacity: 0.35 }} />
-              <Typography variant="h4" sx={{ fontWeight: 900 }}>Your wishlist is empty</Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 380 }}>
-                Save your favourite pieces here to find them later with ease.
-              </Typography>
-              <Button variant="contained" size="large" endIcon={<ArrowIcon />} onClick={() => navigate('/shop')} sx={{ px: 5, py: 1.75 }}>
-                EXPLORE COLLECTION
-              </Button>
-            </Stack>
-          </Box>
+          <div className="min-h-[50vh] flex flex-col items-center justify-center text-center">
+            <EmptyHeartIcon className="text-gray-100 text-9xl mb-8" />
+            <h2 className="text-3xl font-black text-gray-900 mb-4">Your wishlist is empty</h2>
+            <p className="text-gray-500 max-w-sm mb-10">
+              Save your favourite pieces here to find them later with ease.
+            </p>
+            <button 
+              onClick={() => navigate('/shop')}
+              className="px-12 py-4 bg-[#131b2e] text-white font-black text-sm tracking-widest rounded-xl hover:bg-black transition-all flex items-center gap-2"
+            >
+              EXPLORE COLLECTION <ArrowIcon fontSize="small" />
+            </button>
+          </div>
         ) : (
           <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-              <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                <strong>{wishlist.length}</strong> {wishlist.length === 1 ? 'piece' : 'pieces'} saved
-              </Typography>
-            </Box>
-            <Grid2 container spacing={3}>
+            <div className="mb-10">
+              <p className="text-sm text-gray-500 font-bold">
+                <strong className="text-gray-900">{wishlist.length}</strong> {wishlist.length === 1 ? 'piece' : 'pieces'} saved
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {wishlist.map((p, i) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={p.id}>
-                  <Box sx={{ position: 'relative' }}>
-                    <ProductCard product={p} index={i} />
-                    <Tooltip title="Remove from Wishlist">
-                      <IconButton size="small" onClick={() => { removeItem(p.id); toast('Removed from wishlist', 'info') }}
-                        sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'white', zIndex: 3, '&:hover': { bgcolor: 'error.main', color: 'white' }, boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Grid2>
+                <div key={p.id} className="relative group">
+                  <ProductCard product={p} index={i} />
+                  <Tooltip title="Remove from Wishlist">
+                    <button 
+                      onClick={() => { removeItem(p.id); toast('Removed from wishlist', 'info') }}
+                      className="absolute top-4 right-4 p-2 bg-white text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl shadow-lg z-20 transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </button>
+                  </Tooltip>
+                </div>
               ))}
-            </Grid2>
+            </div>
           </>
         )}
-      </Container>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 }

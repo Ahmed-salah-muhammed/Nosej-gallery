@@ -1,15 +1,12 @@
 import { useState, useMemo } from 'react'
 import {
-  Box, Container, Typography, TextField, FormControlLabel, Checkbox,
-  Slider, Select, MenuItem, FormControl, InputLabel, Stack, Skeleton,
-  Button, InputAdornment, Divider, Chip, ToggleButton, ToggleButtonGroup,
-  Rating, Collapse
+  Slider, Select, MenuItem, FormControl, InputLabel, Skeleton,
+  Button, InputAdornment, Rating, Collapse
 } from '@mui/material'
-import Grid2 from '@mui/material/Grid2'
 import {
   Search as SearchIcon, Close as CloseIcon, FilterList as FilterIcon,
   ViewModule as GridIcon, ViewList as ListIcon, ExpandMore as ExpandIcon,
-  SentimentDissatisfied as EmptyIcon, Star as StarIcon
+  SentimentDissatisfied as EmptyIcon
 } from '@mui/icons-material'
 import useFetchProducts from '../hooks/useFetchProducts'
 import ProductCard from '../components/ProductCard'
@@ -29,17 +26,18 @@ const SORT_OPTIONS = [
 function FilterSection({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <Box>
-      <Button fullWidth onClick={() => setOpen(o => !o)}
-        endIcon={<ExpandIcon sx={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: '0.25s' }} />}
-        sx={{ justifyContent: 'space-between', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.72rem', color: 'text.primary', px: 0, '&:hover': { bgcolor: 'transparent', color: 'primary.main' } }}>
+    <div className="border-b border-gray-100">
+      <button 
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex justify-between items-center py-4 font-black text-[11px] tracking-widest uppercase text-gray-900 hover:text-[#131b2e] transition-colors"
+      >
         {title}
-      </Button>
+        <ExpandIcon className={`transition-transform duration-300 ${open ? 'rotate-180' : 'rotate-0'}`} sx={{ fontSize: 18 }} />
+      </button>
       <Collapse in={open}>
-        <Box sx={{ pt: 1.5, pb: 2 }}>{children}</Box>
+        <div className="pb-6">{children}</div>
       </Collapse>
-      <Divider />
-    </Box>
+    </div>
   )
 }
 
@@ -47,10 +45,9 @@ export default function Shop() {
   const { products, loading, error, refetch } = useFetchProducts()
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState([])
-  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [priceRange, setPriceRange] = useState([0, 2000])
   const [sortBy, setSortBy] = useState('default')
   const [minRating, setMinRating] = useState(0)
-  const [inStock, setInStock] = useState(false)
   const [onSale, setOnSale] = useState(false)
   const [viewMode, setViewMode] = useState('grid')
 
@@ -59,7 +56,7 @@ export default function Shop() {
     return Array.from(new Set(products.map(p => p.category)))
   }, [products])
 
-  const maxPrice = useMemo(() => products ? Math.ceil(Math.max(...products.map(p => p.price))) : 1000, [products])
+  const maxPrice = useMemo(() => products?.length ? Math.ceil(Math.max(...products.map(p => p.price))) : 2000, [products])
 
   const filtered = useMemo(() => {
     if (!products) return []
@@ -68,157 +65,205 @@ export default function Shop() {
         p.description?.toLowerCase().includes(search.toLowerCase())
       const matchCat = categories.length === 0 || categories.includes(p.category)
       const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1]
-      const matchRating = (p.rating?.rate ?? 0) >= minRating
-      const matchSale = !onSale || p.id % 5 === 0
+      const matchRating = (p.rating ?? 0) >= minRating
+      const matchSale = !onSale || p.discountPercentage > 10
       return matchSearch && matchCat && matchPrice && matchRating && matchSale
     })
     if (sortBy === 'price_asc') res.sort((a, b) => a.price - b.price)
     else if (sortBy === 'price_desc') res.sort((a, b) => b.price - a.price)
-    else if (sortBy === 'rating_desc') res.sort((a, b) => (b.rating?.rate ?? 0) - (a.rating?.rate ?? 0))
-    else if (sortBy === 'reviews_desc') res.sort((a, b) => (b.rating?.count ?? 0) - (a.rating?.count ?? 0))
+    else if (sortBy === 'rating_desc') res.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    else if (sortBy === 'reviews_desc') res.sort((a, b) => (b.stock ?? 0) - (a.stock ?? 0))
     else if (sortBy === 'name_asc') res.sort((a, b) => a.title.localeCompare(b.title))
     else if (sortBy === 'name_desc') res.sort((a, b) => b.title.localeCompare(a.title))
     return res
   }, [products, search, categories, priceRange, sortBy, minRating, onSale])
 
-  const activeFilters = [
-    ...categories.map(c => ({ label: c, onRemove: () => setCategories(prev => prev.filter(x => x !== c)) })),
-    ...(minRating > 0 ? [{ label: `${minRating}★+`, onRemove: () => setMinRating(0) }] : []),
-    ...(onSale ? [{ label: 'On Sale', onRemove: () => setOnSale(false) }] : []),
-  ]
-
   const resetAll = () => { setSearch(''); setCategories([]); setPriceRange([0, maxPrice]); setSortBy('default'); setMinRating(0); setOnSale(false) }
 
   if (error) return (
-    <Box sx={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Stack spacing={2} alignItems="center">
-        <Typography variant="h5" color="error" fontWeight={900}>Something went wrong</Typography>
-        <Button variant="contained" onClick={refetch}>Try Again</Button>
-      </Stack>
-    </Box>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
+      <h2 className="text-2xl text-red-600 font-black">Something went wrong</h2>
+      <Button variant="contained" onClick={refetch} sx={{ bgcolor: '#131b2e' }}>Try Again</Button>
+    </div>
   )
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <div className="bg-white min-h-screen">
       {/* Header */}
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 7 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 1.5, fontFamily: '"Playfair Display", serif' }}>Shop Collection</Typography>
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">Shop Collection</h1>
           <Breadcrumbs />
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ py: 8 }}>
-        <Grid2 container spacing={6}>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Sidebar */}
-          <Grid2 size={{ xs: 12, lg: 3 }}>
-            <Box sx={{ position: 'sticky', top: 120 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <aside className="lg:col-span-3">
+            <div className="sticky top-32">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="font-black text-lg flex items-center gap-2 text-gray-900">
                   <FilterIcon fontSize="small" /> Filters
-                </Typography>
-                {activeFilters.length > 0 && (
-                  <Button size="small" onClick={resetAll} sx={{ fontSize: '0.72rem', fontWeight: 800, color: 'error.main' }}>CLEAR ALL</Button>
+                </h3>
+                {(categories.length > 0 || minRating > 0 || onSale || search) && (
+                  <button onClick={resetAll} className="text-[10px] font-black text-red-600 hover:underline tracking-widest">CLEAR ALL</button>
                 )}
-              </Box>
-              {/* Active chips */}
-              {activeFilters.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }}>
-                  {activeFilters.map(f => (
-                    <Chip key={f.label} label={f.label} size="small" onDelete={f.onRemove} color="primary" variant="outlined" sx={{ fontWeight: 700, fontSize: '0.72rem' }} />
-                  ))}
-                </Box>
-              )}
-              <Stack spacing={2}>
+              </div>
+
+              <div className="flex flex-col gap-2">
                 <FilterSection title="Search">
-                  <TextField fullWidth placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: search && <InputAdornment position="end"><CloseIcon fontSize="small" sx={{ cursor: 'pointer' }} onClick={() => setSearch('')} /></InputAdornment> }}
-                    sx={{ '& .MuiFilledInput-root': { borderRadius: '10px' } }} />
+                  <div className="relative">
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" sx={{ fontSize: 18 }} />
+                    <input 
+                      type="text" 
+                      placeholder="Search products..." 
+                      className="w-full pl-10 pr-10 py-3 bg-gray-50 rounded-xl outline-none text-sm font-bold border border-transparent focus:border-[#131b2e] transition-all"
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                    />
+                    {search && <CloseIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" sx={{ fontSize: 18 }} onClick={() => setSearch('')} />}
+                  </div>
                 </FilterSection>
+
                 <FilterSection title="Categories">
-                  <Stack spacing={0.5}>
+                  <div className="flex flex-col gap-2">
                     {loading ? [...Array(4)].map((_, i) => <Skeleton key={i} height={28} width="80%" />) : allCategories.map(cat => (
-                      <FormControlLabel key={cat} control={<Checkbox size="small" checked={categories.includes(cat)} onChange={() => setCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])} />}
-                        label={<Typography variant="body2" sx={{ textTransform: 'capitalize', fontWeight: categories.includes(cat) ? 700 : 400, color: categories.includes(cat) ? 'primary.main' : 'text.secondary' }}>{cat}</Typography>} />
+                      <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-gray-300 text-[#131b2e] focus:ring-[#131b2e]"
+                          checked={categories.includes(cat)} 
+                          onChange={() => setCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])} 
+                        />
+                        <span className={`text-sm capitalize transition-colors ${categories.includes(cat) ? 'font-black text-[#131b2e]' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                          {cat}
+                        </span>
+                      </label>
                     ))}
-                  </Stack>
+                  </div>
                 </FilterSection>
+
                 <FilterSection title="Price Range">
-                  <Box sx={{ px: 0.5 }}>
-                    <Slider value={priceRange} onChange={(_, v) => setPriceRange(v)} min={0} max={maxPrice} valueLabelDisplay="auto"
-                      valueLabelFormat={v => `$${v}`} sx={{ color: 'primary.main' }} />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                      <Typography variant="caption" fontWeight={700}>${priceRange[0]}</Typography>
-                      <Typography variant="caption" fontWeight={700}>${priceRange[1]}</Typography>
-                    </Box>
-                  </Box>
+                  <div className="px-2">
+                    <Slider 
+                      value={priceRange} 
+                      onChange={(_, v) => setPriceRange(v)} 
+                      min={0} 
+                      max={maxPrice} 
+                      valueLabelDisplay="auto"
+                      sx={{ color: '#131b2e' }} 
+                    />
+                    <div className="flex justify-between mt-2">
+                      <span className="text-[10px] font-black text-gray-400">${priceRange[0]}</span>
+                      <span className="text-[10px] font-black text-gray-400">${priceRange[1]}</span>
+                    </div>
+                  </div>
                 </FilterSection>
+
                 <FilterSection title="Minimum Rating">
-                  <Rating value={minRating} onChange={(_, v) => setMinRating(v ?? 0)} precision={1} sx={{ color: '#FBBF24' }} />
-                  {minRating > 0 && <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>{minRating}+ stars</Typography>}
+                  <Rating 
+                    value={minRating} 
+                    onChange={(_, v) => setMinRating(v ?? 0)} 
+                    precision={1} 
+                    sx={{ color: '#FBBF24' }} 
+                  />
+                  {minRating > 0 && <span className="text-[10px] font-black text-gray-400 mt-2 block">{minRating}+ stars</span>}
                 </FilterSection>
+
                 <FilterSection title="Availability" defaultOpen={false}>
-                  <FormControlLabel control={<Checkbox size="small" checked={inStock} onChange={e => setInStock(e.target.checked)} />} label={<Typography variant="body2" sx={{ fontWeight: 600 }}>In Stock Only</Typography>} />
-                  <FormControlLabel control={<Checkbox size="small" checked={onSale} onChange={e => setOnSale(e.target.checked)} />} label={<Typography variant="body2" sx={{ fontWeight: 600 }}>On Sale</Typography>} />
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 rounded border-gray-300 text-[#131b2e] focus:ring-[#131b2e]"
+                      checked={onSale} 
+                      onChange={e => setOnSale(e.target.checked)} 
+                    />
+                    <span className={`text-sm transition-colors ${onSale ? 'font-black text-[#131b2e]' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                      On Sale
+                    </span>
+                  </label>
                 </FilterSection>
-              </Stack>
+              </div>
+
               {/* Promo Card */}
-              <Box sx={{ mt: 4, background: 'linear-gradient(135deg, #2a14b4 0%, #4338ca 100%)', color: 'white', p: 3.5, borderRadius: '16px' }}>
-                <Typography variant="overline" sx={{ fontWeight: 900, opacity: 0.8, display: 'block', mb: 0.5 }}>EXCLUSIVE</Typography>
-                <Typography variant="h6" sx={{ fontWeight: 900, mb: 1.5 }}>Unlock the Archive</Typography>
-                <Typography variant="body2" sx={{ mb: 2.5, opacity: 0.85, lineHeight: 1.7 }}>Join our circle for priority access and member shipping rates.</Typography>
-                <Button variant="contained" sx={{ bgcolor: 'white', color: 'primary.main', fontWeight: 900, '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}>JOIN NOW</Button>
-              </Box>
-            </Box>
-          </Grid2>
+              <div className="mt-10 bg-[#131b2e] text-white p-8 rounded-3xl shadow-xl">
+                <span className="text-[10px] font-black opacity-60 block mb-2 tracking-widest uppercase">EXCLUSIVE</span>
+                <h4 className="text-xl font-black mb-4">Unlock the Archive</h4>
+                <p className="text-xs text-white/70 leading-relaxed mb-6">Join our circle for priority access and member shipping rates.</p>
+                <button className="w-full py-3 bg-white text-[#131b2e] font-black text-xs tracking-widest rounded-xl hover:bg-gray-100 transition-all">JOIN NOW</button>
+              </div>
+            </div>
+          </aside>
 
           {/* Product Grid */}
-          <Grid2 size={{ xs: 12, lg: 9 }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 2, mb: 4 }}>
-              <Box>
-                <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: '-0.01em', mb: 0.25 }}>Collection</Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  Showing <strong>{filtered.length}</strong> of {products?.length ?? 0} pieces
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <FormControl variant="filled" sx={{ minWidth: 180 }}>
+          <main className="lg:col-span-9">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+              <div>
+                <h2 className="text-3xl font-black text-gray-900 mb-1">Collection</h2>
+                <p className="text-sm text-gray-500">
+                  Showing <strong className="text-gray-900">{filtered.length}</strong> of {products?.length ?? 0} pieces
+                </p>
+              </div>
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                <FormControl variant="outlined" size="small" className="min-w-[180px]">
                   <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700 }}>Sort By</InputLabel>
-                  <Select value={sortBy} onChange={e => setSortBy(e.target.value)} sx={{ fontWeight: 600, fontSize: '0.875rem', borderRadius: '10px' }}>
-                    {SORT_OPTIONS.map(o => <MenuItem key={o.value} value={o.value} sx={{ fontWeight: 600, fontSize: '0.875rem' }}>{o.label}</MenuItem>)}
+                  <Select 
+                    value={sortBy} 
+                    onChange={e => setSortBy(e.target.value)} 
+                    label="Sort By"
+                    sx={{ fontWeight: 800, fontSize: '0.75rem', borderRadius: '12px' }}
+                  >
+                    {SORT_OPTIONS.map(o => <MenuItem key={o.value} value={o.value} sx={{ fontWeight: 700, fontSize: '0.75rem' }}>{o.label}</MenuItem>)}
                   </Select>
                 </FormControl>
-                <ToggleButtonGroup value={viewMode} exclusive onChange={(_, v) => v && setViewMode(v)} size="small" sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                  <ToggleButton value="grid" sx={{ px: 1.5 }}><GridIcon fontSize="small" /></ToggleButton>
-                  <ToggleButton value="list" sx={{ px: 1.5 }}><ListIcon fontSize="small" /></ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-            </Box>
-            <Divider sx={{ mb: 5 }} />
+                <div className="hidden sm:flex border border-gray-200 rounded-xl overflow-hidden">
+                  <button 
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-[#131b2e] text-white' : 'bg-white text-gray-400 hover:text-gray-900'}`}
+                  >
+                    <GridIcon fontSize="small" />
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('list')}
+                    className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-[#131b2e] text-white' : 'bg-white text-gray-400 hover:text-gray-900'}`}
+                  >
+                    <ListIcon fontSize="small" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-gray-100 mb-10" />
+
             {loading ? (
-              <Grid2 container spacing={3}>
-                {[...Array(9)].map((_, i) => <Grid2 size={{ xs: 12, sm: 6, md: viewMode === 'grid' ? 4 : 12 }} key={i}><Skeleton variant="rectangular" height={360} sx={{ borderRadius: '16px' }} /></Grid2>)}
-              </Grid2>
-            ) : filtered.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 20 }}>
-                <EmptyIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 3 }} />
-                <Typography variant="h5" fontWeight={900} mb={1}>No pieces found</Typography>
-                <Typography variant="body2" color="text.secondary" mb={4}>Try adjusting your filters or search term.</Typography>
-                <Button variant="outlined" onClick={resetAll}>Reset Filters</Button>
-              </Box>
-            ) : (
-              <Grid2 container spacing={3}>
-                {filtered.map((p, i) => (
-                  <Grid2 size={{ xs: 12, sm: 6, md: viewMode === 'grid' ? 4 : 12 }} key={p.id}>
-                    <ProductCard product={p} index={i} />
-                  </Grid2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-4">
+                    <Skeleton variant="rectangular" height={360} className="rounded-2xl" />
+                    <Skeleton height={24} width="60%" />
+                    <Skeleton height={20} width="40%" />
+                  </div>
                 ))}
-              </Grid2>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-32">
+                <EmptyIcon className="text-gray-100 text-8xl mb-6" />
+                <h3 className="text-2xl font-black text-gray-900 mb-2">No pieces found</h3>
+                <p className="text-gray-500 mb-8">Try adjusting your filters or search term.</p>
+                <button onClick={resetAll} className="px-8 py-3 border-2 border-[#131b2e] text-[#131b2e] font-black text-xs tracking-widest rounded-xl hover:bg-[#131b2e] hover:text-white transition-all">RESET FILTERS</button>
+              </div>
+            ) : (
+              <div className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                {filtered.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
             )}
-          </Grid2>
-        </Grid2>
-      </Container>
+          </main>
+        </div>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 }

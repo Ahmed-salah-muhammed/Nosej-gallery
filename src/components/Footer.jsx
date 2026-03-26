@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Box, Container, Typography, Grid2, Stack, Divider, IconButton,
+  IconButton,
   TextField, Button, InputAdornment
 } from '@mui/material'
 import {
@@ -32,9 +32,9 @@ const PAYMENT_METHODS = [
 
 function PaymentBadge({ name, color }) {
   return (
-    <Box sx={{ px: 1.5, py: 0.75, border: '1px solid', borderColor: 'outlineVariant', borderRadius: '6px', bgcolor: 'background.paper', minWidth: 52, textAlign: 'center' }}>
-      <Typography variant="caption" sx={{ fontWeight: 900, color, fontSize: '0.65rem', letterSpacing: '0.04em' }}>{name}</Typography>
-    </Box>
+    <div className="px-4 py-2 border border-gray-200 rounded-lg bg-white min-w-[52px] text-center">
+      <span className="text-[10px] font-black tracking-wider" style={{ color }}>{name}</span>
+    </div>
   )
 }
 
@@ -50,99 +50,129 @@ export default function Footer() {
   }
 
   return (
-    <Box component="footer" sx={{ bgcolor: 'surface.containerLow', pt: 10, pb: 4, borderTop: '1px solid', borderColor: 'outlineVariant' }}>
-      <Container maxWidth="xl">
-        <Grid2 container spacing={6} sx={{ mb: 8 }}>
+    <footer className="bg-gray-50 pt-20 pb-8 border-t border-gray-200">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           {/* Brand Column */}
-          <Grid2 size={{ xs: 12, md: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, fontFamily: '"Playfair Display", serif', letterSpacing: '0.1em' }}>ATELIER</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.9, mb: 3 }}>
+          <div className="md:col-span-4">
+            <h2 className="text-2xl font-black mb-4 font-serif tracking-widest">ATELIER</h2>
+            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-sm">
               The Digital Atelier — a destination for those who value craftsmanship, minimalism, and the art of the modern wardrobe.
-            </Typography>
+            </p>
 
             {/* Contact */}
-            <Stack spacing={1.5} sx={{ mb: 3 }}>
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <EmailIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                <Typography variant="body2" component="a" href="mailto:ahmedsalah219013@gmail.com"
-                  sx={{ color: 'text.secondary', textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>
+            <div className="flex flex-col gap-3 mb-6">
+              <div className="flex items-center gap-3">
+                <EmailIcon sx={{ fontSize: 16 }} className="text-[#131b2e]" />
+                <a href="mailto:ahmedsalah219013@gmail.com" className="text-gray-500 text-sm hover:text-[#131b2e] transition-colors">
                   ahmedsalah219013@gmail.com
-                </Typography>
-              </Stack>
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <PhoneIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                <Typography variant="body2" component="a" href="tel:+201225246488"
-                  sx={{ color: 'text.secondary', textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <PhoneIcon sx={{ fontSize: 16 }} className="text-[#131b2e]" />
+                <a href="tel:+201225246488" className="text-gray-500 text-sm hover:text-[#131b2e] transition-colors">
                   +20 122 524 6488
-                </Typography>
-              </Stack>
-            </Stack>
+                </a>
+              </div>
+            </div>
 
             {/* Socials */}
-            <Stack direction="row" spacing={0.75}>
+            <div className="flex gap-2">
               {SOCIALS.map(s => (
-                <IconButton key={s.label} component="a" href={s.href} target="_blank" size="small"
-                  sx={{ border: '1px solid', borderColor: 'outlineVariant', borderRadius: '8px', '&:hover': { bgcolor: 'primary.main', borderColor: 'primary.main', color: 'white' }, transition: 'all 0.2s' }}>
+                <IconButton 
+                  key={s.label} 
+                  component="a" 
+                  href={s.href} 
+                  target="_blank" 
+                  size="small"
+                  className="border border-gray-200 rounded-xl hover:bg-[#131b2e] hover:text-white transition-all"
+                  sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', '&:hover': { bgcolor: '#131b2e', color: 'white' } }}
+                >
                   {s.icon}
                 </IconButton>
               ))}
-            </Stack>
-          </Grid2>
+            </div>
+          </div>
 
           {/* Links */}
-          {[{ title: 'SHOP', links: SHOP_LINKS }, { title: 'COMPANY', links: COMPANY_LINKS }, { title: 'SUPPORT', links: SUPPORT_LINKS }].map(col => (
-            <Grid2 key={col.title} size={{ xs: 6, sm: 4, md: 2 }}>
-              <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.primary', mb: 2.5, display: 'block', fontSize: '0.72rem' }}>{col.title}</Typography>
-              <Stack spacing={1.25}>
-                {col.links.map(l => (
-                  <Link key={l} to="#" style={{ textDecoration: 'none' }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' }, transition: 'color 0.2s', cursor: 'pointer' }}>{l}</Typography>
-                  </Link>
-                ))}
-              </Stack>
-            </Grid2>
-          ))}
+          <div className="md:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            {[{ title: 'SHOP', links: SHOP_LINKS }, { title: 'COMPANY', links: COMPANY_LINKS }, { title: 'SUPPORT', links: SUPPORT_LINKS }].map(col => (
+              <div key={col.title}>
+                <span className="text-[11px] font-black text-gray-900 mb-6 block tracking-widest uppercase">{col.title}</span>
+                <ul className="flex flex-col gap-3">
+                  {col.links.map(l => (
+                    <li key={l}>
+                      <Link to="#" className="text-gray-500 text-sm hover:text-[#131b2e] transition-colors">
+                        {l}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-          {/* Newsletter */}
-          <Grid2 size={{ xs: 12, md: 2 }} sx={{ minWidth: { md: 240 } }}>
-            <Typography variant="overline" sx={{ fontWeight: 800, mb: 2.5, display: 'block', fontSize: '0.72rem' }}>NEWSLETTER</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2, lineHeight: 1.7 }}>Subscribe for exclusive deals & new drops.</Typography>
+          {/* Newsletter - Right Aligned */}
+          <div className="md:col-span-3 flex flex-col items-start md:items-end text-left md:text-right">
+            <span className="text-[11px] font-black text-gray-900 mb-6 block tracking-widest uppercase">NEWSLETTER</span>
+            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-[240px]">
+              Subscribe for exclusive deals & new drops.
+            </p>
             {subDone ? (
-              <Stack direction="row" spacing={1} alignItems="center">
-                <CheckIcon sx={{ color: 'success.main', fontSize: 18 }} />
-                <Typography variant="caption" sx={{ fontWeight: 700, color: 'success.main' }}>Subscribed!</Typography>
-              </Stack>
+              <div className="flex items-center gap-2 text-green-600">
+                <CheckIcon sx={{ fontSize: 18 }} />
+                <span className="font-bold text-xs">Subscribed!</span>
+              </div>
             ) : (
-              <Stack spacing={1}>
-                <TextField size="small" placeholder="Your email" value={email} onChange={e => { setEmail(e.target.value); setErr('') }} error={!!err} helperText={err}
-                  InputProps={{ startAdornment: <InputAdornment position="start"><EmailIcon sx={{ fontSize: 16 }} /></InputAdornment> }} />
-                <Button variant="contained" size="small" onClick={handleSub} sx={{ fontWeight: 800, py: 1 }}>SUBSCRIBE</Button>
-              </Stack>
+              <div className="flex flex-col gap-3 w-full max-w-[240px]">
+                <TextField 
+                  size="small" 
+                  placeholder="Your email" 
+                  value={email} 
+                  onChange={e => { setEmail(e.target.value); setErr('') }} 
+                  error={!!err} 
+                  helperText={err}
+                  InputProps={{ 
+                    startAdornment: <InputAdornment position="start"><EmailIcon sx={{ fontSize: 16 }} /></InputAdornment> 
+                  }} 
+                />
+                <Button 
+                  variant="contained" 
+                  size="small" 
+                  onClick={handleSub} 
+                  className="bg-[#131b2e] hover:bg-black font-black py-2.5 rounded-lg"
+                  sx={{ bgcolor: '#131b2e', '&:hover': { bgcolor: 'black' } }}
+                >
+                  SUBSCRIBE
+                </Button>
+              </div>
             )}
-          </Grid2>
-        </Grid2>
+          </div>
+        </div>
 
         {/* Payment Methods */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="overline" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 2, fontSize: '0.68rem', letterSpacing: '0.15em' }}>SECURE PAYMENT METHODS</Typography>
-          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+        <div className="mb-12">
+          <span className="text-[10px] font-black text-gray-400 block mb-4 tracking-[0.2em] uppercase">SECURE PAYMENT METHODS</span>
+          <div className="flex flex-wrap gap-3">
             {PAYMENT_METHODS.map(p => <PaymentBadge key={p.name} {...p} />)}
-          </Stack>
-        </Box>
+          </div>
+        </div>
 
-        <Divider sx={{ mb: 3 }} />
+        <hr className="border-gray-200 mb-8" />
 
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 2 }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            © 2025 <strong>Ahmed Salah</strong> — ATELIER Digital Boutique. All rights reserved.
-          </Typography>
-          <Stack direction="row" spacing={2}>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-[11px] text-gray-500">
+            © 2025 <strong className="text-gray-900">Ahmed Salah</strong> — ATELIER Digital Boutique. All rights reserved.
+          </p>
+          <div className="flex gap-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(l => (
-              <Typography key={l} variant="caption" component={Link} to="#" sx={{ color: 'text.secondary', textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>{l}</Typography>
+              <Link key={l} to="#" className="text-[11px] text-gray-500 hover:text-[#131b2e] transition-colors">
+                {l}
+              </Link>
             ))}
-          </Stack>
-        </Box>
-      </Container>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }

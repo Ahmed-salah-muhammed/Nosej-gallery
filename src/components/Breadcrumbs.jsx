@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Box, Typography } from '@mui/material'
 import { NavigateNext as NextIcon, Home as HomeIcon } from '@mui/icons-material'
 
 const labels = {
@@ -25,24 +24,22 @@ export default function Breadcrumbs({ title }) {
   ]
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+    <div className="flex items-center gap-2 flex-wrap">
       {crumbs.map((c, i) => (
-        <Box key={c.path} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          {i > 0 && <NextIcon sx={{ fontSize: 14, color: 'text.disabled' }} />}
-          {i === 0 && <HomeIcon sx={{ fontSize: 13, color: 'text.secondary', mr: 0.25 }} />}
+        <div key={c.path} className="flex items-center gap-2">
+          {i > 0 && <NextIcon className="text-gray-300" sx={{ fontSize: 14 }} />}
+          {i === 0 && <HomeIcon className="text-gray-400 mr-1" sx={{ fontSize: 13 }} />}
           {i < crumbs.length - 1 ? (
-            <Link to={c.path} style={{ textDecoration: 'none' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.72rem', '&:hover': { color: 'primary.main' } }}>
-                {c.label}
-              </Typography>
+            <Link to={c.path} className="text-[10px] font-black text-gray-400 hover:text-[#131b2e] transition-colors uppercase tracking-widest">
+              {c.label}
             </Link>
           ) : (
-            <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.72rem' }}>
+            <span className="text-[10px] font-black text-[#131b2e] uppercase tracking-widest">
               {c.label}
-            </Typography>
+            </span>
           )}
-        </Box>
+        </div>
       ))}
-    </Box>
+    </div>
   )
 }

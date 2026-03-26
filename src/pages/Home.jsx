@@ -6,10 +6,6 @@ import {
   Typography,
   Button,
   Stack,
-  Grid,
-  Divider,
-  Card,
-  CardContent,
   Avatar,
   Rating,
   TextField,
@@ -79,535 +75,203 @@ function HeroCarousel() {
   const s = SLIDES[current];
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: { xs: "75vh", md: "92vh" },
-        overflow: "hidden",
-      }}
-    >
+    <div className="relative h-[75vh] md:h-[92vh] overflow-hidden">
       {/* Background */}
       {SLIDES.map((sl, i) => (
-        <Box
+        <div
           key={sl.id}
-          sx={{
-            position: "absolute",
-            inset: 0,
-            transition: "opacity 0.9s ease",
-            opacity: i === current ? 1 : 0,
-            zIndex: i === current ? 1 : 0,
-          }}
+          className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         >
-          <Box
-            component="img"
+          <img
             src={sl.bg}
-            sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+            alt=""
+            className="w-full h-full object-cover"
           />
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(90deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)",
-            }}
-          />
-        </Box>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+        </div>
       ))}
 
       {/* Content */}
-      <Container
-        maxWidth="xl"
-        sx={{
-          position: "relative",
-          zIndex: 3,
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ maxWidth: 560 }}>
-          <Typography
-            variant="overline"
-            sx={{
-              color: s.accent,
-              fontWeight: 800,
-              letterSpacing: "0.2em",
-              mb: 2,
-              display: "block",
-              fontSize: "0.8rem",
-              transition: "all 0.6s",
-            }}
-          >
+      <div className="relative z-20 h-full max-w-7xl mx-auto px-4 flex items-center">
+        <div className="max-w-xl">
+          <span className="block text-[11px] font-black tracking-[0.3em] mb-4 uppercase" style={{ color: s.accent }}>
             {s.label}
-          </Typography>
-          <Typography
-            variant="h1"
-            sx={{
-              color: "white",
-              fontWeight: 900,
-              fontSize: { xs: "2.8rem", md: "5rem" },
-              lineHeight: 1.05,
-              mb: 3,
-              whiteSpace: "pre-line",
-              textShadow: "0 2px 20px rgba(0,0,0,0.3)",
-            }}
-          >
+          </span>
+          <h1 className="text-white font-black text-5xl md:text-8xl leading-[1.1] mb-6 whitespace-pre-line drop-shadow-2xl">
             {s.title}
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: "rgba(255,255,255,0.85)",
-              mb: 5,
-              fontSize: "1.1rem",
-              lineHeight: 1.7,
-            }}
-          >
+          </h1>
+          <p className="text-white/80 text-lg md:text-xl mb-10 leading-relaxed max-w-md">
             {s.sub}
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              size="large"
+          </p>
+          <div className="flex gap-4">
+            <button
               onClick={() => navigate(s.ctaPath)}
-              endIcon={<ArrowIcon />}
-              sx={{
-                px: 4,
-                py: 1.75,
-                bgcolor: "white",
-                color: "#131b2e",
-                fontWeight: 900,
-                "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
-              }}
+              className="px-8 py-4 bg-white text-[#131b2e] font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all flex items-center gap-2"
             >
-              {s.cta}
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 4,
-                py: 1.75,
-                borderColor: "rgba(255,255,255,0.6)",
-                color: "white",
-                fontWeight: 800,
-                "&:hover": {
-                  borderColor: "white",
-                  bgcolor: "rgba(255,255,255,0.1)",
-                },
-              }}
-            >
+              {s.cta} <ArrowIcon fontSize="small" />
+            </button>
+            <button className="px-8 py-4 border-2 border-white/60 text-white font-black text-sm tracking-widest rounded-xl hover:bg-white/10 transition-all">
               VIEW LOOKBOOK
-            </Button>
-          </Stack>
-        </Box>
-      </Container>
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Prev / Next */}
-      <IconButton
-        onClick={prev}
-        sx={{
-          position: "absolute",
-          left: { xs: 8, md: 24 },
-          top: "50%",
-          transform: "translateY(-50%)",
-          zIndex: 4,
-          bgcolor: "rgba(255,255,255,0.18)",
-          backdropFilter: "blur(8px)",
-          color: "white",
-          "&:hover": { bgcolor: "rgba(255,255,255,0.35)" },
-        }}
-      >
+      {/* Controls */}
+      <button onClick={prev} className="absolute left-6 top-1/2 -translate-y-1/2 z-30 p-3 bg-white/10 backdrop-blur-md text-white rounded-full hover:bg-white/30 transition-all hidden md:block">
         <PrevIcon />
-      </IconButton>
-      <IconButton
-        onClick={next}
-        sx={{
-          position: "absolute",
-          right: { xs: 8, md: 24 },
-          top: "50%",
-          transform: "translateY(-50%)",
-          zIndex: 4,
-          bgcolor: "rgba(255,255,255,0.18)",
-          backdropFilter: "blur(8px)",
-          color: "white",
-          "&:hover": { bgcolor: "rgba(255,255,255,0.35)" },
-        }}
-      >
+      </button>
+      <button onClick={next} className="absolute right-6 top-1/2 -translate-y-1/2 z-30 p-3 bg-white/10 backdrop-blur-md text-white rounded-full hover:bg-white/30 transition-all hidden md:block">
         <NextIcon />
-      </IconButton>
+      </button>
 
       {/* Dots */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 28,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 4,
-          display: "flex",
-          gap: 1.25,
-        }}
-      >
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
         {SLIDES.map((_, i) => (
-          <Box
+          <button
             key={i}
             onClick={() => setCurrent(i)}
-            sx={{
-              width: i === current ? 28 : 8,
-              height: 8,
-              borderRadius: "4px",
-              cursor: "pointer",
-              bgcolor: i === current ? "white" : "rgba(255,255,255,0.45)",
-              transition: "all 0.35s",
-            }}
+            className={`h-2 rounded-full transition-all duration-500 ${i === current ? 'w-8 bg-white' : 'w-2 bg-white/40'}`}
           />
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
 /* ── Brand Story ── */
 function BrandStory() {
   return (
-    <Box sx={{ py: 14, bgcolor: "background.paper", overflow: "hidden" }}>
-      <Container maxWidth="xl">
-        <Grid2 container spacing={8} alignItems="center">
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <Box sx={{ position: "relative" }}>
-              <Box
-                component="img"
-                src="https://cdn.dummyjson.com/products/images/mens-shirts/1/thumbnail.png"
+    <section className="py-24 bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="relative group">
+            <div className="relative overflow-hidden rounded-[40px] aspect-[4/5] shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=1000"
+                alt="Brand Story"
                 loading="lazy"
-                sx={{
-                  width: "100%",
-                  height: 520,
-                  objectFit: "cover",
-                  borderRadius: "24px",
-                }}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: -24,
-                  right: -24,
-                  bgcolor: "primary.main",
-                  color: "white",
-                  p: 4,
-                  borderRadius: "20px",
-                  maxWidth: 200,
-                  boxShadow: "0 8px 32px rgba(42,20,180,0.3)",
-                  display: { xs: "none", md: "block" },
-                }}
-              >
-                <Typography variant="h3" sx={{ fontWeight: 900, mb: 0.5 }}>
-                  12+
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    fontWeight: 700,
-                    opacity: 0.9,
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  YEARS OF CRAFTSMANSHIP
-                </Typography>
-              </Box>
-            </Box>
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                color: "primary.main",
-                fontWeight: 800,
-                letterSpacing: "0.2em",
-                mb: 2,
-                display: "block",
-              }}
-            >
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+            </div>
+            
+            <div className="absolute -bottom-8 -right-8 bg-[#131b2e] text-white p-8 rounded-3xl max-w-[220px] shadow-2xl hidden md:block transform transition-transform duration-500 hover:-translate-y-2">
+              <h3 className="text-4xl font-black mb-1">12+</h3>
+              <p className="text-[10px] font-black opacity-80 tracking-[0.2em] uppercase leading-tight">
+                YEARS OF UNCOMPROMISED CRAFTSMANSHIP
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start">
+            <span className="text-[#131b2e] font-black text-[11px] tracking-[0.3em] mb-4 uppercase">
               OUR STORY
-            </Typography>
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: 900,
-                mb: 3,
-                lineHeight: 1.2,
-                fontFamily: '"Playfair Display", serif',
-              }}
-            >
+            </span>
+            <h2 className="text-5xl font-black mb-8 leading-[1.1] font-serif text-gray-900">
               Crafted with Passion, <br />
               Worn with Pride
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: "text.secondary", mb: 3, lineHeight: 1.9 }}
-            >
+            </h2>
+            <p className="text-gray-500 text-lg leading-relaxed mb-6">
               ATELIER was born from a simple belief: that quality and style
               should never be mutually exclusive. Founded in 2013, we set out to
               bridge the gap between luxury craftsmanship and everyday
               accessibility.
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: "text.secondary", mb: 5, lineHeight: 1.9 }}
-            >
-              Every piece in our collection is thoughtfully designed, ethically
-              sourced, and built to last — because we believe fashion should
-              make you feel good inside and out.
-            </Typography>
-            <Stack spacing={2} sx={{ mb: 5 }}>
-              {[
-                "Ethically sourced materials from certified suppliers",
-                "Carbon-neutral shipping on all orders worldwide",
-                "Lifetime quality guarantee on every purchase",
-              ].map((item) => (
-                <Stack
-                  key={item}
-                  direction="row"
-                  spacing={1.5}
-                  alignItems="center"
-                >
-                  <CheckIcon sx={{ color: "primary.main", fontSize: 20 }} />
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {item}
-                  </Typography>
-                </Stack>
-              ))}
-            </Stack>
-            <Button
-              variant="contained"
-              size="large"
-              endIcon={<ArrowIcon />}
-              onClick={() => {}}
-              sx={{ px: 4, py: 1.75 }}
-            >
+            </p>
+            <p className="text-gray-500 text-lg leading-relaxed mb-10">
+              Every piece in our collection is meticulously designed and sourced
+              from ethical artisans across the globe. We don't just sell
+              clothes; we curate experiences that empower you to express your
+              unique identity.
+            </p>
+            <button className="px-10 py-4 border-2 border-[#131b2e] text-[#131b2e] font-black text-sm tracking-widest rounded-xl hover:bg-[#131b2e] hover:text-white transition-all duration-300 uppercase">
               LEARN MORE ABOUT US
-            </Button>
-          </Grid2>
-        </Grid2>
-      </Container>
-    </Box>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
 /* ── Testimonials ── */
 const REVIEWS = [
   {
-    name: "Sarah M.",
-    role: "Fashion Blogger",
+    id: 1,
+    name: "Sarah Jenkins",
+    role: "Fashion Editor",
+    text: "The attention to detail in every piece is remarkable. ATELIER has truly redefined modern luxury for me.",
     rating: 5,
-    text: "Absolutely love the quality! The fabrics are luxurious and the fit is perfect. ATELIER has become my go-to for everything.",
-    avatar: "https://i.pravatar.cc/80?img=1",
+    avatar: "https://i.pravatar.cc/150?u=sarah",
   },
   {
-    name: "James K.",
+    id: 2,
+    name: "Marcus Thorne",
     role: "Creative Director",
+    text: "Minimalism at its finest. Their collection perfectly balances form and function without compromising on style.",
     rating: 5,
-    text: "The attention to detail is incredible. Every stitch is perfect. These pieces elevate any wardrobe instantly.",
-    avatar: "https://i.pravatar.cc/80?img=3",
+    avatar: "https://i.pravatar.cc/150?u=marcus",
   },
   {
-    name: "Amira H.",
-    role: "Style Consultant",
+    id: 3,
+    name: "Elena Rodriguez",
+    role: "Style Influencer",
+    text: "I've been a loyal customer for years. The quality of the fabrics and the timeless designs are unmatched.",
     rating: 5,
-    text: "Fast shipping, beautiful packaging, and the clothes exceeded my expectations. Will definitely be ordering again!",
-    avatar: "https://i.pravatar.cc/80?img=5",
-  },
-  {
-    name: "Carlos R.",
-    role: "Photographer",
-    rating: 4,
-    text: "Great variety of styles. The dark mode on the website is a nice touch too — very premium shopping experience.",
-    avatar: "https://i.pravatar.cc/80?img=7",
-  },
-  {
-    name: "Priya S.",
-    role: "UX Designer",
-    rating: 5,
-    text: "Ordered three times already. The quality-to-price ratio is unbeatable. Highly recommend the new collection!",
-    avatar: "https://i.pravatar.cc/80?img=9",
-  },
-  {
-    name: "Daniel W.",
-    role: "Entrepreneur",
-    rating: 5,
-    text: "Exceptional service from start to finish. The packaging alone felt like a luxury unboxing experience.",
-    avatar: "https://i.pravatar.cc/80?img=11",
+    avatar: "https://i.pravatar.cc/150?u=elena",
   },
 ];
 
 function Testimonials() {
   return (
-    <Box sx={{ py: 14, bgcolor: "surface.containerLow" }}>
-      <Container maxWidth="xl">
-        <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography
-            variant="overline"
-            sx={{
-              color: "primary.main",
-              fontWeight: 800,
-              letterSpacing: "0.2em",
-            }}
-          >
-            CUSTOMER REVIEWS
-          </Typography>
-          <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 900,
-              mt: 1,
-              fontFamily: '"Playfair Display", serif',
-            }}
-          >
-            What Our Clients Say
-          </Typography>
-        </Box>
-        <Grid2 container spacing={3}>
-          {REVIEWS.map((r, i) => (
-            <Grid2 key={i} size={{ xs: 12, sm: 6, lg: 4 }}>
-              <Card
-                sx={{
-                  p: 3.5,
-                  height: "100%",
-                  borderRadius: "20px",
-                  bgcolor: "background.paper",
-                  border: "1px solid",
-                  borderColor: "outlineVariant",
-                  transition: "all 0.3s",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: "0 12px 32px rgba(19,27,46,0.08)",
-                  },
-                }}
-              >
-                <QuoteIcon
-                  sx={{
-                    color: "primary.main",
-                    fontSize: 32,
-                    mb: 2,
-                    opacity: 0.5,
-                  }}
-                />
-                <Typography
-                  variant="body1"
-                  sx={{
-                    color: "text.secondary",
-                    mb: 3,
-                    lineHeight: 1.8,
-                    fontStyle: "italic",
-                  }}
-                >
-                  "{r.text}"
-                </Typography>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Avatar src={r.avatar} sx={{ width: 44, height: 44 }} />
-                  <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>
-                      {r.name}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      {r.role}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ ml: "auto" }}>
-                    <Rating
-                      value={r.rating}
-                      readOnly
-                      size="small"
-                      sx={{ color: "#FBBF24" }}
-                    />
-                  </Box>
-                </Stack>
-              </Card>
-            </Grid2>
+    <section className="py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <span className="text-[#131b2e] font-black text-[11px] tracking-[0.3em] mb-4 uppercase">
+            TESTIMONIALS
+          </span>
+          <h2 className="text-4xl font-black font-serif text-gray-900">What Our Clients Say</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {REVIEWS.map((r) => (
+            <div key={r.id} className="bg-white p-10 rounded-[32px] shadow-sm hover:shadow-xl transition-all duration-500 group">
+              <QuoteIcon className="text-gray-100 text-6xl mb-6 group-hover:text-[#131b2e]/10 transition-colors" />
+              <p className="text-gray-600 text-lg italic mb-8 leading-relaxed">"{r.text}"</p>
+              <div className="flex items-center gap-4">
+                <img src={r.avatar} alt={r.name} className="w-12 h-12 rounded-full object-cover" />
+                <div className="flex-1">
+                  <h4 className="font-black text-sm text-gray-900">{r.name}</h4>
+                  <p className="text-xs text-gray-400 font-bold">{r.role}</p>
+                </div>
+                <Rating value={r.rating} readOnly size="small" sx={{ color: "#FBBF24" }} />
+              </div>
+            </div>
           ))}
-        </Grid2>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </section>
   );
 }
 
 /* ── Partner Brands ── */
-const BRANDS = [
-  "ZARA",
-  "H&M",
-  "NIKE",
-  "ADIDAS",
-  "GUCCI",
-  "PRADA",
-  "VERSACE",
-  "DIOR",
-  "CHANEL",
-  "HERMES",
-  "BALENCIAGA",
-  "OFF-WHITE",
-];
+const BRANDS = ["ZARA", "H&M", "NIKE", "ADIDAS", "GUCCI", "PRADA", "VERSACE", "DIOR", "CHANEL", "HERMES", "BALENCIAGA", "OFF-WHITE"];
 
 function PartnerBrands() {
   return (
-    <Box
-      sx={{
-        py: 8,
-        bgcolor: "background.default",
-        borderTop: "1px solid",
-        borderBottom: "1px solid",
-        borderColor: "outlineVariant",
-        overflow: "hidden",
-      }}
-    >
-      <Container maxWidth="xl" sx={{ mb: 4 }}>
-        <Typography
-          variant="overline"
-          sx={{
-            textAlign: "center",
-            display: "block",
-            color: "text.secondary",
-            fontWeight: 700,
-            letterSpacing: "0.2em",
-          }}
-        >
-          PARTNER BRANDS
-        </Typography>
-      </Container>
-      <Box sx={{ overflow: "hidden" }}>
-        <div className="marquee-track" style={{ gap: "0px" }}>
+    <section className="py-12 bg-white border-y border-gray-100 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 mb-8 text-center">
+        <span className="text-[10px] font-black text-gray-400 tracking-[0.3em] uppercase">PARTNER BRANDS</span>
+      </div>
+      <div className="flex overflow-hidden">
+        <div className="flex animate-marquee whitespace-nowrap">
           {[...BRANDS, ...BRANDS].map((b, i) => (
-            <Box
-              key={i}
-              sx={{
-                px: { xs: 4, md: 6 },
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: 140,
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 900,
-                  letterSpacing: "0.12em",
-                  color: "text.disabled",
-                  fontSize: { xs: "0.85rem", md: "1rem" },
-                  whiteSpace: "nowrap",
-                  transition: "color 0.2s",
-                  "&:hover": { color: "primary.main" },
-                }}
-              >
-                {b}
-              </Typography>
-            </Box>
+            <span key={i} className="mx-12 text-xl font-black text-gray-200 hover:text-[#131b2e] transition-colors cursor-default tracking-widest">
+              {b}
+            </span>
           ))}
         </div>
-      </Box>
-    </Box>
+      </div>
+    </section>
   );
 }
 
@@ -629,111 +293,39 @@ function Newsletter() {
   };
 
   return (
-    <Box
-      sx={{
-        py: 12,
-        background: "linear-gradient(135deg, #2a14b4 0%, #4338ca 100%)",
-      }}
-    >
-      <Container maxWidth="md" sx={{ textAlign: "center" }}>
-        <Typography
-          variant="overline"
-          sx={{
-            color: "rgba(255,255,255,0.7)",
-            fontWeight: 800,
-            letterSpacing: "0.2em",
-          }}
-        >
-          STAY IN THE LOOP
-        </Typography>
-        <Typography
-          variant="h3"
-          sx={{
-            color: "white",
-            fontWeight: 900,
-            mt: 1,
-            mb: 2,
-            fontFamily: '"Playfair Display", serif',
-          }}
-        >
-          Subscribe to Our Newsletter
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{ color: "rgba(255,255,255,0.8)", mb: 5 }}
-        >
-          Get exclusive offers, early access to new collections, and style
-          inspiration delivered to your inbox.
-        </Typography>
+    <section className="py-24 bg-[#131b2e]">
+      <div className="max-w-3xl mx-auto px-4 text-center">
+        <span className="text-white/60 font-black text-[11px] tracking-[0.3em] mb-4 uppercase">STAY IN THE LOOP</span>
+        <h2 className="text-white text-4xl md:text-5xl font-black mb-6 font-serif">Subscribe to Our Newsletter</h2>
+        <p className="text-white/70 text-lg mb-12">Get exclusive offers, early access to new collections, and style inspiration delivered to your inbox.</p>
+        
         {submitted ? (
-          <Stack
-            direction="row"
-            spacing={1.5}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CheckIcon sx={{ color: "#4ade80", fontSize: 28 }} />
-            <Typography variant="h6" sx={{ color: "white", fontWeight: 700 }}>
-              You're subscribed! Welcome to the circle. ✨
-            </Typography>
-          </Stack>
+          <div className="flex items-center justify-center gap-3 text-green-400">
+            <CheckIcon fontSize="large" />
+            <span className="text-xl font-black">You're subscribed! Welcome to the circle. ✨</span>
+          </div>
         ) : (
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.5}
-            maxWidth={500}
-            mx="auto"
-          >
-            <TextField
-              fullWidth
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError("");
-              }}
-              error={!!error}
-              helperText={error}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailIcon
-                      sx={{ color: error ? "error.main" : "text.secondary" }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                bgcolor: "white",
-                borderRadius: "10px",
-                "& .MuiFilledInput-root": {
-                  bgcolor: "white",
-                  borderRadius: "10px",
-                  border: "none",
-                },
-              }}
-            />
-            <Button
-              variant="contained"
-              size="large"
+          <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+            <div className="flex-1 relative">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                className={`w-full px-6 py-4 rounded-xl bg-white outline-none text-gray-900 font-bold ${error ? 'border-2 border-red-500' : ''}`}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
+              />
+              {error && <p className="absolute -bottom-6 left-0 text-red-400 text-[10px] font-bold">{error}</p>}
+            </div>
+            <button
               onClick={handleSubmit}
-              sx={{
-                px: 4,
-                py: 1.75,
-                bgcolor: "#131b2e",
-                color: "white",
-                fontWeight: 900,
-                whiteSpace: "nowrap",
-                "&:hover": { bgcolor: "#0f1629" },
-                minWidth: 160,
-              }}
+              className="px-10 py-4 bg-white text-[#131b2e] font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all"
             >
               SUBSCRIBE
-            </Button>
-          </Stack>
+            </button>
+          </div>
         )}
-      </Container>
-    </Box>
+      </div>
+    </section>
   );
 }
 
@@ -744,235 +336,87 @@ export default function Home() {
   const featured = products?.slice(0, 8) || [];
 
   return (
-    <Box sx={{ bgcolor: "background.default" }}>
+    <main className="bg-white">
       <HeroCarousel />
 
       {/* Featured Categories */}
-      <Container maxWidth="xl" sx={{ py: 12 }}>
-        <Grid2 container spacing={4}>
-          <Grid2 size={{ xs: 12, md: 4 }}>
-            <Box
-              sx={{
-                position: "relative",
-                height: 420,
-                borderRadius: "20px",
-                overflow: "hidden",
-                mb: 4,
-              }}
-            >
-              <Box
-                component="img"
-                loading="lazy"
+      <section className="max-w-7xl mx-auto px-4 py-24">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div className="md:col-span-4 flex flex-col gap-8">
+            <div className="relative h-[420px] rounded-[32px] overflow-hidden group">
+              <img
                 src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "transform 0.5s",
-                  "&:hover": { transform: "scale(1.04)" },
-                }}
+                alt="Couture"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <Box
-                sx={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to top, rgba(19,27,46,0.75) 0%, transparent 60%)",
-                  p: 3.5,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  sx={{ color: "white", fontWeight: 900, mb: 1 }}
-                >
-                  Couture
-                </Typography>
-                <Link
-                  to="/shop?category=women's clothing"
-                  style={{
-                    color: "rgba(255,255,255,0.85)",
-                    fontWeight: 700,
-                    textDecoration: "none",
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.1em",
-                    borderBottom: "1px solid rgba(255,255,255,0.4)",
-                    width: "fit-content",
-                    paddingBottom: 2,
-                  }}
-                >
+              <div className="absolute inset-0 bg-gradient-to-t from-[#131b2e]/80 to-transparent p-8 flex flex-col justify-end">
+                <h3 className="text-white text-3xl font-black mb-2">Couture</h3>
+                <Link to="/shop?category=womens-clothing" className="text-white/80 font-black text-[10px] tracking-widest border-b border-white/30 w-fit pb-1 hover:text-white transition-colors">
                   DISCOVER →
                 </Link>
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                bgcolor: "surface.containerLow",
-                p: 4,
-                borderRadius: "20px",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 900, mb: 1 }}>
-                Accessories
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", mb: 3 }}
-              >
-                The finishing touches for a modern wardrobe.
-              </Typography>
-              <Button
-                size="small"
-                variant="outlined"
-                component={Link}
-                to="/shop?category=jewelery"
-              >
-                Shop Now →
-              </Button>
-            </Box>
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 8 }}>
-            <Box
-              sx={{
-                position: "relative",
-                height: "100%",
-                minHeight: 420,
-                borderRadius: "20px",
-                overflow: "hidden",
-              }}
-            >
-              <Box
-                component="img"
-                loading="lazy"
+              </div>
+            </div>
+            <div className="bg-gray-50 p-10 rounded-[32px] border border-gray-100">
+              <h3 className="text-xl font-black mb-2 text-gray-900">Accessories</h3>
+              <p className="text-gray-500 text-sm mb-6">The finishing touches for a modern wardrobe.</p>
+              <Link to="/shop?category=accessories" className="text-[#131b2e] font-black text-xs tracking-widest border-b-2 border-[#131b2e] pb-1">
+                SHOP NOW →
+              </Link>
+            </div>
+          </div>
+          <div className="md:col-span-8">
+            <div className="relative h-full min-h-[420px] rounded-[32px] overflow-hidden group">
+              <img
                 src="https://images.unsplash.com/photo-1491336477066-31156b5e4f35?auto=format&fit=crop&q=80&w=1600"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "transform 0.5s",
-                  "&:hover": { transform: "scale(1.04)" },
-                }}
+                alt="Menswear"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <Box
-                sx={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(135deg, rgba(19,27,46,0.65) 0%, transparent 60%)",
-                  p: 6,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography
-                  variant="overline"
-                  sx={{ color: "rgba(255,255,255,0.8)", fontWeight: 800 }}
-                >
-                  TAILORED PRECISION
-                </Typography>
-                <Typography
-                  variant="h2"
-                  sx={{
-                    color: "white",
-                    fontWeight: 900,
-                    mb: 4,
-                    textShadow: "0 2px 12px rgba(0,0,0,0.3)",
-                  }}
-                >
-                  The Modern
-                  <br />
-                  Gentleman
-                </Typography>
-                <Button
-                  variant="contained"
-                  sx={{
-                    width: "fit-content",
-                    bgcolor: "white",
-                    color: "#131b2e",
-                    fontWeight: 900,
-                    "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
-                  }}
-                  component={Link}
-                  to="/shop?category=men's clothing"
-                >
-                  EXPLORE ESSENTIALS
-                </Button>
-              </Box>
-            </Box>
-          </Grid2>
-        </Grid2>
-      </Container>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#131b2e]/80 to-transparent p-12 flex flex-col justify-end">
+                <span className="text-white/60 font-black text-[10px] tracking-[0.3em] mb-2 uppercase">NEW ARRIVALS</span>
+                <h3 className="text-white text-5xl font-black mb-4 font-serif">The Modern <br /> Gentleman</h3>
+                <Link to="/shop?category=mens-clothing" className="px-8 py-4 bg-white text-[#131b2e] font-black text-xs tracking-widest rounded-xl w-fit hover:bg-gray-100 transition-all">
+                  EXPLORE COLLECTION
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Best Sellers */}
-      <Box sx={{ bgcolor: "background.paper", py: 12 }}>
-        <Container maxWidth="xl">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                color: "primary.main",
-                fontWeight: 800,
-                letterSpacing: "0.2em",
-              }}
-            >
-              CURATED SELECTION
-            </Typography>
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: 900,
-                mt: 1,
-                fontFamily: '"Playfair Display", serif',
-              }}
-            >
-              The Best Sellers
-            </Typography>
-          </Box>
-          {loading ? (
-            <Grid2 container spacing={3}>
-              {[...Array(8)].map((_, i) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={i}>
-                  <Box
-                    sx={{
-                      borderRadius: "16px",
-                      overflow: "hidden",
-                      bgcolor: "surface.containerLow",
-                      height: 400,
-                    }}
-                  />
-                </Grid2>
-              ))}
-            </Grid2>
-          ) : (
-            <Grid2 container spacing={3}>
-              {featured.map((p, i) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={p.id}>
-                  <ProductCard product={p} index={i} />
-                </Grid2>
-              ))}
-            </Grid2>
-          )}
-          <Box sx={{ textAlign: "center", mt: 8 }}>
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate("/shop")}
-              sx={{ px: 6, py: 1.75 }}
-            >
-              VIEW ALL PIECES
-            </Button>
-          </Box>
-        </Container>
-      </Box>
+      <section className="bg-gray-50 py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-end mb-12">
+            <div>
+              <span className="text-[#131b2e] font-black text-[11px] tracking-[0.3em] mb-4 uppercase block">CURATED SELECTION</span>
+              <h2 className="text-4xl font-black font-serif text-gray-900">Best Sellers</h2>
+            </div>
+            <Link to="/shop" className="text-[#131b2e] font-black text-xs tracking-widest border-b-2 border-[#131b2e] pb-1 hidden sm:block">
+              VIEW ALL PRODUCTS →
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {loading ? (
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="flex flex-col gap-4">
+                  <div className="aspect-[4/5] bg-gray-200 rounded-2xl animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+                </div>
+              ))
+            ) : (
+              featured.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)
+            )}
+          </div>
+        </div>
+      </section>
 
       <BrandStory />
       <Testimonials />
       <PartnerBrands />
       <Newsletter />
       <Footer />
-    </Box>
+    </main>
   );
 }

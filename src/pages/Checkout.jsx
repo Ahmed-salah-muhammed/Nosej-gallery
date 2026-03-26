@@ -1,23 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import {
-  Box,
-  Container,
-  Typography,
-} from '@mui/material'
-import Grid from '@mui/material/Grid2'
-import {
   TextField,
   Button,
-  Stack,
-  Divider,
-  Paper,
   FormControlLabel,
   Checkbox,
   Radio,
   RadioGroup,
   FormControl,
-  FormLabel,
   Avatar
 } from '@mui/material'
 import {
@@ -70,198 +60,175 @@ export default function Checkout() {
   const grandTotal = totalPrice + shipping + tax
 
   return (
-    <Box sx={{ bgcolor: 'background.default', pb: 12 }}>
-
+    <div className="bg-white pb-24">
       {/* Header with Breadcrumbs */}
-      <Box sx={{ bgcolor: 'surface.containerLow', py: 8 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h2" sx={{ fontWeight: 900, mb: 2, letterSpacing: '-0.02em' }}>Checkout</Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit', fontSize: '0.75rem', fontWeight: 700 }}>HOME</Link>
-            <ChevronIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-            <Link to="/cart" style={{ textDecoration: 'none', color: 'inherit', fontSize: '0.75rem', fontWeight: 700 }}>CART</Link>
-            <ChevronIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>CHECKOUT</Typography>
-          </Stack>
-        </Container>
-      </Box>
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-5xl font-black mb-4 font-serif text-gray-900">Checkout</h1>
+          <div className="flex items-center gap-2">
+            <Link to="/" className="text-[10px] font-black text-gray-400 hover:text-[#131b2e] transition-colors uppercase tracking-widest">HOME</Link>
+            <ChevronIcon className="text-gray-300" sx={{ fontSize: 14 }} />
+            <Link to="/cart" className="text-[10px] font-black text-gray-400 hover:text-[#131b2e] transition-colors uppercase tracking-widest">CART</Link>
+            <ChevronIcon className="text-gray-300" sx={{ fontSize: 14 }} />
+            <span className="text-[10px] font-black text-[#131b2e] uppercase tracking-widest">CHECKOUT</span>
+          </div>
+        </div>
+      </div>
 
-      <Container maxWidth="xl" sx={{ mt: 10 }}>
+      <div className="max-w-7xl mx-auto px-4 mt-20">
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={8}>
-
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             {/* Form Column */}
-            <Grid size={{ xs: 12, lg: 8 }}>
-              <Stack spacing={8}>
-
+            <div className="lg:col-span-8">
+              <div className="flex flex-col gap-16">
                 {/* Billing Details */}
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 4, letterSpacing: '-0.01em' }}>Billing Details</Typography>
-                  <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth label="Full Name" required name="fullName"
-                        value={formData.fullName} onChange={handleInputChange}
-                        sx={{ bgcolor: 'surface.containerLow' }}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth label="Email Address" required type="email" name="email"
-                        value={formData.email} onChange={handleInputChange}
-                        sx={{ bgcolor: 'surface.containerLow' }}
-                      />
-                    </Grid>
-                    <Grid size={12}>
+                <div>
+                  <h2 className="text-3xl font-black mb-8 text-gray-900">Billing Details</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <TextField
+                      fullWidth label="Full Name" required name="fullName"
+                      value={formData.fullName} onChange={handleInputChange}
+                      variant="outlined"
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    />
+                    <TextField
+                      fullWidth label="Email Address" required type="email" name="email"
+                      value={formData.email} onChange={handleInputChange}
+                      variant="outlined"
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    />
+                    <div className="md:col-span-2">
                       <TextField
                         fullWidth label="Street Address" required name="address"
                         value={formData.address} onChange={handleInputChange}
-                        sx={{ bgcolor: 'surface.containerLow' }}
+                        variant="outlined"
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
                       />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth label="Town / City" required name="city"
-                        value={formData.city} onChange={handleInputChange}
-                        sx={{ bgcolor: 'surface.containerLow' }}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TextField
-                        fullWidth label="Postcode / ZIP" required name="zip"
-                        value={formData.zip} onChange={handleInputChange}
-                        sx={{ bgcolor: 'surface.containerLow' }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
+                    </div>
+                    <TextField
+                      fullWidth label="Town / City" required name="city"
+                      value={formData.city} onChange={handleInputChange}
+                      variant="outlined"
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    />
+                    <TextField
+                      fullWidth label="Postcode / ZIP" required name="zip"
+                      value={formData.zip} onChange={handleInputChange}
+                      variant="outlined"
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    />
+                  </div>
+                </div>
 
                 {/* Payment Details */}
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 900, mb: 4, letterSpacing: '-0.01em' }}>Payment Information</Typography>
-                  <Paper sx={{ p: 4, borderRadius: '16px', bgcolor: 'surface.containerLow', boxShadow: 'none' }}>
-                    <FormControl component="fieldset" fullWidth>
+                <div>
+                  <h2 className="text-3xl font-black mb-8 text-gray-900">Payment Information</h2>
+                  <div className="bg-gray-50 p-8 rounded-[32px] border border-gray-100">
+                    <FormControl component="fieldset" className="w-full">
                       <RadioGroup defaultValue="credit_card">
-                        <Stack spacing={3}>
-                          <Box sx={{ p: 3, border: '1px solid', borderColor: 'primary.main', borderRadius: '12px', bgcolor: 'background.paper' }}>
-                            <FormControlLabel value="credit_card" control={<Radio size="small" />} label={
-                              <Stack direction="row" spacing={2} alignItems="center">
-                                <CardIcon />
-                                <Typography variant="body2" sx={{ fontWeight: 800 }}>Credit / Debit Card</Typography>
-                              </Stack>
+                        <div className="flex flex-col gap-6">
+                          <div className="p-6 bg-white border-2 border-[#131b2e] rounded-2xl shadow-sm">
+                            <FormControlLabel value="credit_card" control={<Radio size="small" sx={{ color: '#131b2e', '&.Mui-checked': { color: '#131b2e' } }} />} label={
+                              <div className="flex items-center gap-3">
+                                <CardIcon className="text-[#131b2e]" />
+                                <span className="text-sm font-black text-gray-900">Credit / Debit Card</span>
+                              </div>
                             } />
-                            <Box sx={{ mt: 3 }}>
-                              <Grid container spacing={2}>
-                                <Grid size={12}>
-                                  <TextField fullWidth label="Card Number" required name="cardNumber" value={formData.cardNumber} onChange={handleInputChange} placeholder="0000 0000 0000 0000" />
-                                </Grid>
-                                <Grid size={6}>
-                                  <TextField fullWidth label="Expiry Date" required name="expiry" value={formData.expiry} onChange={handleInputChange} placeholder="MM/YY" />
-                                </Grid>
-                                <Grid size={6}>
-                                  <TextField fullWidth label="CVV" required name="cvv" value={formData.cvv} onChange={handleInputChange} placeholder="123" />
-                                </Grid>
-                              </Grid>
-                            </Box>
-                          </Box>
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="md:col-span-2">
+                                <TextField fullWidth label="Card Number" required name="cardNumber" value={formData.cardNumber} onChange={handleInputChange} placeholder="0000 0000 0000 0000" variant="outlined" size="small" />
+                              </div>
+                              <TextField fullWidth label="Expiry Date" required name="expiry" value={formData.expiry} onChange={handleInputChange} placeholder="MM/YY" variant="outlined" size="small" />
+                              <TextField fullWidth label="CVV" required name="cvv" value={formData.cvv} onChange={handleInputChange} placeholder="123" variant="outlined" size="small" />
+                            </div>
+                          </div>
 
-                          <Box sx={{ p: 3, border: '1px solid', borderColor: 'outlineVariant', borderRadius: '12px', bgcolor: 'surface.containerLow' }}>
-                            <FormControlLabel value="paypal" control={<Radio size="small" />} label={
-                              <Typography variant="body2" sx={{ fontWeight: 800 }}>PayPal</Typography>
+                          <div className="p-6 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-colors">
+                            <FormControlLabel value="paypal" control={<Radio size="small" sx={{ color: '#131b2e', '&.Mui-checked': { color: '#131b2e' } }} />} label={
+                              <span className="text-sm font-black text-gray-900">PayPal</span>
                             } />
-                          </Box>
-                        </Stack>
+                          </div>
+                        </div>
                       </RadioGroup>
                     </FormControl>
-                  </Paper>
-                </Box>
+                  </div>
+                </div>
 
                 <FormControlLabel
-                  control={<Checkbox defaultChecked size="small" />}
-                  label={<Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>Create an account and save my billing information for future purchases.</Typography>}
+                  control={<Checkbox defaultChecked size="small" sx={{ color: '#131b2e', '&.Mui-checked': { color: '#131b2e' } }} />}
+                  label={<span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Create an account and save my billing information for future purchases.</span>}
                 />
-
-              </Stack>
-            </Grid>
+              </div>
+            </div>
 
             {/* Sidebar Summary */}
-            <Grid size={{ xs: 12, lg: 4 }}>
-              <Paper sx={{ p: 6, borderRadius: '24px', bgcolor: 'text.primary', color: 'background.paper', boxShadow: 'none', position: 'sticky', top: 120 }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, mb: 4, letterSpacing: '-0.01em' }}>Your Order</Typography>
+            <div className="lg:col-span-4">
+              <div className="bg-[#131b2e] text-white p-10 rounded-[40px] shadow-2xl sticky top-32">
+                <h2 className="text-2xl font-black mb-8">Your Order</h2>
 
-                <Stack spacing={3} sx={{ mb: 6, maxH: '300px', overflowY: 'auto', pr: 1 }}>
+                <div className="flex flex-col gap-6 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                   {items.map(({ product, qty }) => (
-                    <Box key={product.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar variant="rounded" src={product.image} sx={{ width: 40, height: 50, bgcolor: 'white', '& img': { objectFit: 'contain', p: 0.5 } }} />
-                        <Box sx={{ maxWidth: 150 }}>
-                          <Typography variant="caption" sx={{ fontWeight: 800, display: 'block', noWrap: true, textOverflow: 'ellipsis', overflow: 'hidden' }}>{product.title}</Typography>
-                          <Typography variant="caption" sx={{ opacity: 0.7 }}>Qty: {qty}</Typography>
-                        </Box>
-                      </Stack>
-                      <Typography variant="caption" sx={{ fontWeight: 900 }}>${(product.price * qty).toFixed(2)}</Typography>
-                    </Box>
+                    <div key={product.id} className="flex justify-between items-center gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-14 bg-white rounded-lg p-1 flex items-center justify-center flex-shrink-0">
+                          <img src={product.thumbnail} alt="" className="max-w-full max-h-full object-contain" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-[10px] font-black uppercase tracking-wider truncate w-32">{product.title}</h4>
+                          <p className="text-[10px] font-bold opacity-50">Qty: {qty}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-black">${(product.price * qty).toFixed(2)}</span>
+                    </div>
                   ))}
-                </Stack>
+                </div>
 
-                <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 4 }} />
+                <hr className="border-white/10 mb-8" />
 
-                <Stack spacing={2} sx={{ mb: 4 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ opacity: 0.7 }}>Subtotal</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>${totalPrice.toFixed(2)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ opacity: 0.7 }}>Shipping</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" sx={{ opacity: 0.7 }}>Est. Tax (8%)</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 800 }}>${tax.toFixed(2)}</Typography>
-                  </Box>
-                  <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)', my: 1 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 900 }}>Total</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 900, color: 'primary.light' }}>${grandTotal.toFixed(2)}</Typography>
-                  </Box>
-                </Stack>
+                <div className="flex flex-col gap-4 mb-8">
+                  <div className="flex justify-between text-xs">
+                    <span className="opacity-60 font-bold">Subtotal</span>
+                    <span className="font-black">${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="opacity-60 font-bold">Shipping</span>
+                    <span className="font-black">{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="opacity-60 font-bold">Est. Tax (8%)</span>
+                    <span className="font-black">${tax.toFixed(2)}</span>
+                  </div>
+                  <hr className="border-white/20 my-2" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-black">Total</span>
+                    <span className="text-3xl font-black text-white">${grandTotal.toFixed(2)}</span>
+                  </div>
+                </div>
 
-                <Button
+                <button
                   type="submit"
-                  variant="contained"
-                  fullWidth
-                  size="large"
                   disabled={isProcessing}
-                  sx={{
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    py: 2,
-                    fontWeight: 900,
-                    mb: 3,
-                    '&:hover': { bgcolor: 'primary.light' }
-                  }}
+                  className="w-full py-4 bg-white text-[#131b2e] font-black text-sm tracking-widest rounded-xl hover:bg-gray-100 transition-all mb-8 disabled:opacity-50"
                 >
                   {isProcessing ? 'PROCESSING...' : 'COMPLETE PURCHASE'}
-                </Button>
+                </button>
 
-                <Stack spacing={2}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <SecureIcon sx={{ fontSize: 18, opacity: 0.7 }} />
-                    <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 600 }}>Secure encrypted payment process</Typography>
-                  </Stack>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <ShippingIcon sx={{ fontSize: 18, opacity: 0.7 }} />
-                    <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 600 }}>Standard global delivery within 5-7 days</Typography>
-                  </Stack>
-                </Stack>
-
-              </Paper>
-            </Grid>
-
-          </Grid>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3 opacity-50">
+                    <SecureIcon sx={{ fontSize: 18 }} />
+                    <span className="text-[9px] font-black uppercase tracking-widest">Secure encrypted payment</span>
+                  </div>
+                  <div className="flex items-center gap-3 opacity-50">
+                    <ShippingIcon sx={{ fontSize: 18 }} />
+                    <span className="text-[9px] font-black uppercase tracking-widest">Global delivery 5-7 days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
-      </Container>
+      </div>
       <Footer />
-    </Box>
+    </div>
   )
 }

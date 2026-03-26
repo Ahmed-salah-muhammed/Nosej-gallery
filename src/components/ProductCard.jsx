@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Card, CardContent, Typography, Box, IconButton, Button, Rating, Chip, Fade, Stack
-} from '@mui/material'
+import { Rating, IconButton, Button } from '@mui/material'
 import {
   FavoriteBorder as FavoriteIcon, Favorite as FavoriteFilledIcon,
   ShoppingBagOutlined as CartIcon, Search as SearchIcon
@@ -33,66 +31,100 @@ export default function ProductCard({ product, index = 0 }) {
   }
 
   const isNew = product.id % 3 === 0
-  const isSale = product.id % 5 === 0
+  const isSale = product.discountPercentage > 10
 
   return (
-    <Card
+    <div
       onClick={() => navigate(`/product/${product.id}`)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="card-entry"
+      className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl card-entry"
       style={{ animationDelay: `${index * 60}ms` }}
-      sx={{
-        cursor: 'pointer', position: 'relative', display: 'flex', flexDirection: 'column', height: '100%',
-        bgcolor: 'surface.containerLow', borderRadius: '16px', overflow: 'hidden',
-        transition: 'all 0.3s ease-in-out',
-        '&:hover': { bgcolor: 'surface.containerHighest', transform: 'translateY(-6px)', boxShadow: '0 16px 40px rgba(19,27,46,0.10)' }
-      }}
     >
-      <Box sx={{ position: 'relative', pt: '120%', overflow: 'hidden', bgcolor: 'white', borderRadius: '16px 16px 0 0' }}>
+      <div className="relative pt-[120%] overflow-hidden bg-gray-50 rounded-t-2xl">
         {/* Badges */}
-        <Box sx={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 0.5, zIndex: 2 }}>
-          {isNew && <Chip label="NEW" size="small" sx={{ bgcolor: '#131b2e', color: 'white', fontWeight: 900, borderRadius: '5px', height: 20, fontSize: '0.6rem' }} />}
-          {isSale && <Chip label="SALE" size="small" color="error" sx={{ fontWeight: 900, borderRadius: '5px', height: 20, fontSize: '0.6rem' }} />}
-        </Box>
+        <div className="absolute top-2.5 left-2.5 flex gap-1 z-10">
+          {isNew && (
+            <span className="bg-[#131b2e] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">
+              NEW
+            </span>
+          )}
+          {isSale && (
+            <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">
+              SALE
+            </span>
+          )}
+        </div>
+
         {/* Hover Actions */}
-        <Fade in={hover}>
-          <Box sx={{ position: 'absolute', top: 10, right: 10, display: 'flex', flexDirection: 'column', gap: 0.75, zIndex: 2 }}>
-            <IconButton size="small" onClick={handleWishlist}
-              sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}>
-              {isInWishlist(product.id) ? <FavoriteFilledIcon fontSize="small" sx={{ color: 'error.main' }} /> : <FavoriteIcon fontSize="small" />}
-            </IconButton>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`) }}
-              sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}>
-              <SearchIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Fade>
+        <div className={`absolute top-2.5 right-2.5 flex flex-col gap-2 z-10 transition-opacity duration-300 ${hover ? 'opacity-100' : 'opacity-0'}`}>
+          <IconButton 
+            size="small" 
+            onClick={handleWishlist}
+            className="bg-white shadow-md hover:bg-[#131b2e] hover:text-white"
+            sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#131b2e', color: 'white' } }}
+          >
+            {isInWishlist(product.id) ? <FavoriteFilledIcon fontSize="small" className="text-red-500" /> : <FavoriteIcon fontSize="small" />}
+          </IconButton>
+          <IconButton 
+            size="small" 
+            onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`) }}
+            className="bg-white shadow-md hover:bg-[#131b2e] hover:text-white"
+            sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#131b2e', color: 'white' } }}
+          >
+            <SearchIcon fontSize="small" />
+          </IconButton>
+        </div>
+
         {/* Image */}
-        <Box component="img" src={imgError ? FALLBACK : product.image} alt={product.title}
-          onError={() => setImgError(true)} loading="lazy"
-          sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', p: 3, transition: 'transform 0.5s ease', transform: hover ? 'scale(1.06)' : 'scale(1)' }} />
+        <img 
+          src={imgError ? FALLBACK : product.thumbnail} 
+          alt={product.title}
+          onError={() => setImgError(true)} 
+          loading="lazy"
+          className={`absolute top-0 left-0 w-full h-full object-contain p-6 transition-transform duration-500 ${hover ? 'scale-110' : 'scale-100'}`}
+        />
+
         {/* Add to Cart Slide-up */}
-        <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', transition: 'transform 0.3s ease', transform: hover ? 'translateY(0)' : 'translateY(100%)', zIndex: 2 }}>
-          <Button fullWidth variant="contained" onClick={handleAdd} startIcon={<CartIcon />}
-            sx={{ borderRadius: 0, bgcolor: '#131b2e', py: 1.5, '&:hover': { bgcolor: 'primary.main' }, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em' }}>
+        <div className={`absolute bottom-0 left-0 w-full transition-transform duration-300 z-10 ${hover ? 'translate-y-0' : 'translate-y-full'}`}>
+          <Button 
+            fullWidth 
+            variant="contained" 
+            onClick={handleAdd} 
+            startIcon={<CartIcon />}
+            className="rounded-none bg-[#131b2e] py-3 hover:bg-primary-main text-[11px] font-extrabold tracking-widest"
+            sx={{ borderRadius: 0, bgcolor: '#131b2e', '&:hover': { bgcolor: '#131b2e' } }}
+          >
             ADD TO CART
           </Button>
-        </Box>
-      </Box>
-      <CardContent sx={{ flex: 1, pt: 2, pb: '14px !important', px: 2 }}>
-        <Typography variant="body2" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', mb: 0.75, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', '&:hover': { color: 'primary.main' } }}>
+        </div>
+      </div>
+
+      <div className="flex-1 p-4">
+        <h3 className="font-extrabold uppercase tracking-tight mb-2 text-sm line-clamp-1 hover:text-primary-main transition-colors">
           {product.title}
-        </Typography>
-        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mb: 1.25 }}>
-          <Rating value={product.rating?.rate ?? 4} readOnly size="small" precision={0.5} sx={{ color: '#FBBF24', fontSize: '0.9rem' }} />
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.75rem' }}>({product.rating?.count ?? 0})</Typography>
-        </Stack>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="h6" sx={{ fontWeight: 900, color: 'text.primary', fontSize: '1.1rem' }}>${product.price.toFixed(2)}</Typography>
-          {isSale && <Typography variant="caption" sx={{ color: 'text.secondary', textDecoration: 'line-through', fontWeight: 600 }}>${(product.price * 1.4).toFixed(2)}</Typography>}
-        </Stack>
-      </CardContent>
-    </Card>
+        </h3>
+        
+        <div className="flex items-center gap-2 mb-3">
+          <Rating 
+            value={product.rating ?? 4} 
+            readOnly 
+            size="small" 
+            precision={0.1} 
+            sx={{ color: '#FBBF24', fontSize: '0.9rem' }} 
+          />
+          <span className="text-gray-500 font-semibold text-xs">({product.stock})</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="font-black text-gray-900 text-lg">${product.price.toFixed(2)}</span>
+          {isSale && (
+            <span className="text-gray-400 line-through font-semibold text-xs">
+              ${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
