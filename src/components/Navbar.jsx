@@ -115,7 +115,7 @@ function LiveSearch({ onClose }) {
             <div
               key={p.id}
               onClick={() => {
-                navigate(`/product/${p.id}`);
+                navigate(`/shop/${p.id}`);
                 onClose();
                 setQuery("");
               }}
