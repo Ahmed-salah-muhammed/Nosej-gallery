@@ -29,6 +29,7 @@ import useFetchProducts from "../hooks/useFetchProducts";
 import ProductCard from "../components/ProductCard";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
+import { useSearchParams } from "react-router-dom";
 
 const SORT_OPTIONS = [
   { label: "Default Sorting", value: "default" },
@@ -65,10 +66,19 @@ function FilterSection({ title, children, defaultOpen = true }) {
   );
 }
 
+const matchesCategory = (productCategory, selectedCategory) => {
+  if (selectedCategory === "mens-clothing") return productCategory.startsWith("mens-");
+  if (selectedCategory === "womens-clothing") return productCategory.startsWith("womens-");
+  if (selectedCategory === "accessories") return ["womens-bags", "womens-jewellery", "mens-watches", "sunglasses"].includes(productCategory);
+  return productCategory === selectedCategory;
+};
+
 export default function Shop() {
   const { products, loading, error, refetch } = useFetchProducts();
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get("category") || "";
   const [search, setSearch] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(initialCategory ? [initialCategory] : []);
   const [priceRange, setPriceRange] = useState([20, 13000]);
   const [sortBy, setSortBy] = useState("default");
   const [minRating, setMinRating] = useState(0);
@@ -97,7 +107,7 @@ export default function Shop() {
         p.title.toLowerCase().includes(search.toLowerCase()) ||
         p.description?.toLowerCase().includes(search.toLowerCase());
       const matchCat =
-        categories.length === 0 || categories.includes(p.category);
+        categories.length === 0 || categories.some((category) => matchesCategory(p.category, category));
       const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
       const matchRating = (p.rating ?? 0) >= minRating;
       const matchSale = !onSale || p.discountPercentage > 10;
@@ -124,6 +134,11 @@ export default function Shop() {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filtered.slice(start, start + ITEMS_PER_PAGE);
   }, [filtered, currentPage]);
+
+  useEffect(() => {
+    setCategories(initialCategory ? [initialCategory] : []);
+    setCurrentPage(1);
+  }, [initialCategory]);
 
   useEffect(() => {
     setCurrentPage(1);

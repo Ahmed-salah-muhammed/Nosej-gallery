@@ -1,21 +1,36 @@
 import api from "../config/api.js";
 
 // ========== PRODUCTS ==========
-export async function fetchProducts(filters = {}) {
-  // The axios response interceptor already unwraps to the JSON body,
-  // which is { success, count, products }.
-  const data = await api.get("/products", { params: filters });
-  return data.products || [];
+// Product browsing is intentionally independent from the optional local
+// backend. This keeps the storefront usable in a fresh frontend checkout.
+const PRODUCTS_API_URL = "https://dummyjson.com";
+
+const normalizeProduct = (product) => ({
+  ...product,
+  category: product.category || "uncategorized",
+  discountPercentage: product.discountPercentage ?? 0,
+  rating: product.rating ?? 0,
+  stock: product.stock ?? 0,
+  images: product.images?.length ? product.images : [product.thumbnail].filter(Boolean),
+});
+
+export async function fetchProducts() {
+  const response = await fetch(`${PRODUCTS_API_URL}/products?limit=100`);
+  if (!response.ok) throw new Error(`Products request failed (${response.status})`);
+  const data = await response.json();
+  return (data.products || []).map(normalizeProduct);
 }
 
 export async function fetchProduct(id) {
-  const data = await api.get(`/products/${id}`);
-  return data.product;
+  const response = await fetch(`${PRODUCTS_API_URL}/products/${encodeURIComponent(id)}`);
+  if (!response.ok) throw new Error(`Product request failed (${response.status})`);
+  return normalizeProduct(await response.json());
 }
 
 export async function fetchCategories() {
-  const data = await api.get("/products/categories");
-  return data.categories || [];
+  const response = await fetch(`${PRODUCTS_API_URL}/products/category-list`);
+  if (!response.ok) throw new Error(`Categories request failed (${response.status})`);
+  return response.json();
 }
 
 // ========== AUTH ==========
